@@ -19,6 +19,7 @@ public class CategoryController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
     public CategoryController(CategoryService categoryService){
         this.categoryService = categoryService;
     }
