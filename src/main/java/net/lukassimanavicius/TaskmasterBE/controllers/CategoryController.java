@@ -8,6 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
@@ -20,14 +25,36 @@ public class CategoryController {
     private ModelMapper modelMapper;
 
     @Autowired
-    public CategoryController(CategoryService categoryService){
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
-    /**Return a CategoryDTO according to the requested ID*/
+    /**
+     * Return a list of all categories
+     */
+    @GetMapping
+    @ResponseBody
+    public ResponseEntity<List<CategoryDTO>> getCategories() {
+
+        // get a list of category entities
+        List<Category> categories = categoryService.getCategories();
+
+        // convert entities to DTO
+        List<CategoryDTO> categoriesDTO = new ArrayList<>();
+        for (Category cat : categories) {
+            categoriesDTO.add(modelMapper.map(cat, CategoryDTO.class));
+        }
+
+        // return a list of DTO objects as a response entity
+        return new ResponseEntity<List<CategoryDTO>>(categoriesDTO, HttpStatus.OK);
+    }
+
+    /**
+     * Return a CategoryDTO according to the requested ID
+     */
     @GetMapping("{id}")
     @ResponseBody
-    public ResponseEntity<CategoryDTO> getCategory(@PathVariable int id){
+    public ResponseEntity<CategoryDTO> getCategory(@PathVariable int id) {
 
         // get the category entity
         Category category = categoryService.getCategory(id);
@@ -37,5 +64,13 @@ public class CategoryController {
 
         // return the DTO as a response entity
         return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
+    }
+
+    /**
+     * Handles exceptions for bad IDs
+     */
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, EntityNotFoundException.class})
+    private ResponseEntity handleBadID() {
+        return ResponseEntity.badRequest().body("Bad id, please try again.");
     }
 }
