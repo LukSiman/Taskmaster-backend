@@ -12,7 +12,7 @@ public class ConvertingDTOTest {
     private final ModelMapper modelMapper = new ModelMapper();
 
     @Test
-    public void convertCategoryToDTOTest(){
+    public void convertCategoryToDTOTest() {
         Category category = new Category();
         String name = "TestTest";
         category.setCategoryName(name);
@@ -23,7 +23,7 @@ public class ConvertingDTOTest {
     }
 
     @Test
-    public void convertDTOToCategoryTest(){
+    public void convertDTOToCategoryTest() {
         Category category = new Category();
         String name = "TestTest";
         category.setCategoryName(name);
