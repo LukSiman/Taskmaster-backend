@@ -16,4 +16,5 @@ public class TaskDTO {
     private LocalTime taskStartTime;
     private LocalTime taskEndTime;
     private LocalDate taskDate;
+    private String categoryName;
 }

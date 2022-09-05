@@ -6,6 +6,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "task")
@@ -38,4 +39,8 @@ public class Task {
 
     @Column(name = "task_date")
     private LocalDate taskDate;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 }
