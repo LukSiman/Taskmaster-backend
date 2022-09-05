@@ -108,7 +108,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskStatus", is("Completed")))
                 .andExpect(jsonPath("taskStartTime", is("08:00:00")))
                 .andExpect(jsonPath("taskEndTime", is("08:15:00")))
-                .andExpect(jsonPath("taskDate", is("2022-08-28")));
+                .andExpect(jsonPath("taskDate", is("2022-08-28")))
+                .andExpect(jsonPath("categoryName", is("Beauty")));
     }
 
     @Test
@@ -151,7 +152,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskStatus", is("Completed")))
                 .andExpect(jsonPath("taskStartTime", is("08:15:00")))
                 .andExpect(jsonPath("taskEndTime", is("08:30:00")))
-                .andExpect(jsonPath("taskDate", is("2022-08-28")));
+                .andExpect(jsonPath("taskDate", is("2022-08-28")))
+                .andExpect(jsonPath("categoryName", is("Food")));
 
         response2.andExpect(status().isOk())
                 .andExpect(jsonPath("taskName", is("Learning")))
@@ -160,7 +162,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskStatus", is("")))
                 .andExpect(jsonPath("taskStartTime", is("20:30:00")))
                 .andExpect(jsonPath("taskEndTime", is("22:00:00")))
-                .andExpect(jsonPath("taskDate", is("2022-08-28")));
+                .andExpect(jsonPath("taskDate", is("2022-08-28")))
+                .andExpect(jsonPath("categoryName", is("Education")));
 
         response3.andExpect(status().isOk())
                 .andExpect(jsonPath("taskName", is("Task3")))
@@ -169,7 +172,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskStatus").doesNotExist())
                 .andExpect(jsonPath("taskStartTime").doesNotExist())
                 .andExpect(jsonPath("taskEndTime").doesNotExist())
-                .andExpect(jsonPath("taskDate", is("2022-08-29")));
+                .andExpect(jsonPath("taskDate", is("2022-08-29")))
+                .andExpect(jsonPath("categoryName", is("Other")));
 
         response4.andExpect(status().isOk())
                 .andExpect(jsonPath("taskName", is("Task4")))
@@ -178,7 +182,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskStatus").doesNotExist())
                 .andExpect(jsonPath("taskStartTime").doesNotExist())
                 .andExpect(jsonPath("taskEndTime").doesNotExist())
-                .andExpect(jsonPath("taskDate", is("2022-09-20")));
+                .andExpect(jsonPath("taskDate", is("2022-09-20")))
+                .andExpect(jsonPath("categoryName", is("Entertainment")));
 
         response5.andExpect(status().isOk())
                 .andExpect(jsonPath("taskName", is("Task1")))
@@ -187,7 +192,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskStatus").doesNotExist())
                 .andExpect(jsonPath("taskStartTime").doesNotExist())
                 .andExpect(jsonPath("taskEndTime").doesNotExist())
-                .andExpect(jsonPath("taskDate", is("2022-08-28")));
+                .andExpect(jsonPath("taskDate", is("2022-08-28")))
+                .andExpect(jsonPath("categoryName", is("Other")));
     }
 
     @Test
