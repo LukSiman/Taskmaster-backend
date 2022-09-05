@@ -34,10 +34,10 @@ public class CategoryController {
      */
     @GetMapping
     @ResponseBody
-    public ResponseEntity<List<CategoryDTO>> getCategories() {
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
 
         // get a list of category entities
-        List<Category> categories = categoryService.getCategories();
+        List<Category> categories = categoryService.getAllCategories();
 
         // convert entities to DTO
         List<CategoryDTO> categoriesDTO = new ArrayList<>();
@@ -46,7 +46,7 @@ public class CategoryController {
         }
 
         // return a list of DTO objects as a response entity
-        return new ResponseEntity<List<CategoryDTO>>(categoriesDTO, HttpStatus.OK);
+        return new ResponseEntity<>(categoriesDTO, HttpStatus.OK);
     }
 
     /**
@@ -57,7 +57,7 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> getCategory(@PathVariable int id) {
 
         // get the category entity
-        Category category = categoryService.getCategory(id);
+        Category category = categoryService.getSingleCategory(id);
 
         // convert entity to DTO
         CategoryDTO categoryDTO = modelMapper.map(category, CategoryDTO.class);

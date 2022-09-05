@@ -21,14 +21,14 @@ public class CategoryService {
     /**
      * Returns all categories
      */
-    public List<Category> getCategories() {
+    public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
     /**
      * Returns the category with specified id
      */
-    public Category getCategory(int id) {
+    public Category getSingleCategory(int id) {
         Category category = categoryRepository.getReferenceById(id);
         return category;
     }
