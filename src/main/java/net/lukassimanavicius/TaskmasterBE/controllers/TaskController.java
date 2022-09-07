@@ -13,6 +13,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/tasks")
@@ -53,7 +54,7 @@ public class TaskController {
      */
     @GetMapping("{id}")
     @ResponseBody
-    public ResponseEntity<TaskDTO> getTask(@PathVariable int id) {
+    public ResponseEntity<TaskDTO> getTask(@PathVariable UUID id) {
 
         // get the task entity
         Task task = taskService.getSingleTask(id);

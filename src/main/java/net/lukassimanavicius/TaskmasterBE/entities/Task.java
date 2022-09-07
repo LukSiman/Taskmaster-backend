@@ -2,11 +2,12 @@ package net.lukassimanavicius.TaskmasterBE.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "task")
@@ -18,6 +19,10 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "task_id")
     private Integer taskID;
+
+    @Type(type = "uuid-char")
+    @Column(name = "task_uuid")
+    private UUID taskUUID;
 
     @Column(name = "task_name")
     private String taskName;
