@@ -60,7 +60,8 @@ public class TaskController {
         // get the task entity
         Task task = taskService.getSingleTask(id);
 
-        if(task == null){
+        // handle if task is null
+        if (task == null) {
             throw new EntityNotFoundException();
         }
 
