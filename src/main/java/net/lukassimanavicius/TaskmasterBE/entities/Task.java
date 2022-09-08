@@ -45,7 +45,6 @@ public class Task {
     @Column(name = "task_end_time")
     private LocalTime taskEndTime;
 
-    @Generated(GenerationTime.INSERT)
     @Column(name = "task_date")
     private LocalDate taskDate;
 

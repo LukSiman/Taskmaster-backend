@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,6 +50,11 @@ public class TaskService {
 
         // create a UUID for the task
         taskToSave.setTaskUUID(UUID.randomUUID());
+
+        // set current date as default if no date is given
+        if(taskToSave.getTaskDate() == null){
+            taskToSave.setTaskDate(LocalDate.now());
+        }
 
         // extract category if task entity has it
         if (taskToSave.getCategory() != null) {
