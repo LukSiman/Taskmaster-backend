@@ -81,7 +81,7 @@ public class ConvertingDTOTest {
         Integer order = 5;
         task.setTaskOrder(order);
 
-        String status = "Completed";
+        Integer status = 1;
         task.setTaskStatus(status);
 
         LocalTime startTime = LocalTime.parse("18:20:00");

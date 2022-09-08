@@ -37,7 +37,7 @@ public class Task {
     private String taskNote;
 
     @Column(name = "task_status")
-    private String taskStatus;
+    private Integer taskStatus;
 
     @Column(name = "task_start_time")
     private LocalTime taskStartTime;
