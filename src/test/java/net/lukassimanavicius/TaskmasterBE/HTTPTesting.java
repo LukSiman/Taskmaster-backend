@@ -8,6 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.sql.SQLOutput;
+import java.time.LocalDate;
+import java.util.UUID;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -98,10 +102,11 @@ public class HTTPTesting {
 
     @Test
     public void GetSingleTaskTest() throws Exception {
-        ResultActions response = mockMvc.perform(get("/tasks/{id}", 1));
+        ResultActions response = mockMvc.perform(get("/tasks/{id}", "0360d216-2f06-11ed-a188-fcaa14e3878f"));
 
         response.andExpect(status().isOk())
                 .andDo(print())
+                .andExpect(jsonPath("taskUUID", is("0360d216-2f06-11ed-a188-fcaa14e3878f")))
                 .andExpect(jsonPath("taskName", is("Wash up")))
                 .andExpect(jsonPath("taskOrder", is(1)))
                 .andExpect(jsonPath("taskNote", is("")))
@@ -115,6 +120,16 @@ public class HTTPTesting {
     @Test
     public void GetSingleBadTaskTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/tasks/{id}", 99));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+    }
+
+    @Test
+    public void GetSingleRandomIDTaskTest() throws Exception {
+        UUID randomID = UUID.randomUUID();
+        System.out.println(randomID);
+        ResultActions response = mockMvc.perform(get("/tasks/{id}", randomID));
 
         response.andExpect(status().isBadRequest())
                 .andDo(print()).andExpect(content().string("Bad id, please try again."));
@@ -138,14 +153,15 @@ public class HTTPTesting {
 
     @Test
     public void GetSeveralSingleTaskTest() throws Exception {
-        ResultActions response1 = mockMvc.perform(get("/tasks/{id}", 2));
-        ResultActions response2 = mockMvc.perform(get("/tasks/{id}", 8));
-        ResultActions response3 = mockMvc.perform(get("/tasks/{id}", 14));
-        ResultActions response4 = mockMvc.perform(get("/tasks/{id}", 20));
-        ResultActions response5 = mockMvc.perform(get("/tasks/{id}", 26));
+        ResultActions response1 = mockMvc.perform(get("/tasks/{id}", "03622ae4-2f06-11ed-a188-fcaa14e3878f"));
+        ResultActions response2 = mockMvc.perform(get("/tasks/{id}", "036abc29-2f06-11ed-a188-fcaa14e3878f"));
+        ResultActions response3 = mockMvc.perform(get("/tasks/{id}", "03742590-2f06-11ed-a188-fcaa14e3878f"));
+        ResultActions response4 = mockMvc.perform(get("/tasks/{id}", "037e6007-2f06-11ed-a188-fcaa14e3878f"));
+        ResultActions response5 = mockMvc.perform(get("/tasks/{id}", "0387ddd9-2f06-11ed-a188-fcaa14e3878f"));
 
 
         response1.andExpect(status().isOk())
+                .andExpect(jsonPath("taskUUID", is("03622ae4-2f06-11ed-a188-fcaa14e3878f")))
                 .andExpect(jsonPath("taskName", is("Breakfast")))
                 .andExpect(jsonPath("taskOrder", is(2)))
                 .andExpect(jsonPath("taskNote", is("Overnight oats")))
@@ -156,6 +172,7 @@ public class HTTPTesting {
                 .andExpect(jsonPath("categoryName", is("Food")));
 
         response2.andExpect(status().isOk())
+                .andExpect(jsonPath("taskUUID", is("036abc29-2f06-11ed-a188-fcaa14e3878f")))
                 .andExpect(jsonPath("taskName", is("Learning")))
                 .andExpect(jsonPath("taskOrder", is(8)))
                 .andExpect(jsonPath("taskNote", is("Algos chapter 11")))
@@ -166,6 +183,7 @@ public class HTTPTesting {
                 .andExpect(jsonPath("categoryName", is("Education")));
 
         response3.andExpect(status().isOk())
+                .andExpect(jsonPath("taskUUID", is("03742590-2f06-11ed-a188-fcaa14e3878f")))
                 .andExpect(jsonPath("taskName", is("Task3")))
                 .andExpect(jsonPath("taskOrder", is(3)))
                 .andExpect(jsonPath("taskNote", is("Random note")))
@@ -176,6 +194,7 @@ public class HTTPTesting {
                 .andExpect(jsonPath("categoryName", is("Other")));
 
         response4.andExpect(status().isOk())
+                .andExpect(jsonPath("taskUUID", is("037e6007-2f06-11ed-a188-fcaa14e3878f")))
                 .andExpect(jsonPath("taskName", is("Task4")))
                 .andExpect(jsonPath("taskOrder", is(1)))
                 .andExpect(jsonPath("taskNote").doesNotExist())
@@ -185,14 +204,17 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskDate", is("2022-09-20")))
                 .andExpect(jsonPath("categoryName", is("Entertainment")));
 
+
+        LocalDate date = LocalDate.now();
         response5.andExpect(status().isOk())
+                .andExpect(jsonPath("taskUUID", is("0387ddd9-2f06-11ed-a188-fcaa14e3878f")))
                 .andExpect(jsonPath("taskName", is("Task1")))
                 .andExpect(jsonPath("taskOrder", is(1)))
                 .andExpect(jsonPath("taskNote").doesNotExist())
                 .andExpect(jsonPath("taskStatus").doesNotExist())
                 .andExpect(jsonPath("taskStartTime").doesNotExist())
                 .andExpect(jsonPath("taskEndTime").doesNotExist())
-                .andExpect(jsonPath("taskDate", is("2022-08-28")))
+                .andExpect(jsonPath("taskDate", is(date.toString())))
                 .andExpect(jsonPath("categoryName", is("Other")));
     }
 
