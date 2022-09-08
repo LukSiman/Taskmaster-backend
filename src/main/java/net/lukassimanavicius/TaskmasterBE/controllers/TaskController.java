@@ -79,4 +79,62 @@ public class TaskController {
     private ResponseEntity handleBadID() {
         return ResponseEntity.badRequest().body("Bad id, please try again.");
     }
+
+    /**
+     * Saves the task to the database
+     */
+    @PostMapping("save")
+    @ResponseBody
+    public ResponseEntity<TaskDTO> addTask(@RequestBody TaskDTO taskDTO) {
+
+        // convert DTO to entity
+        Task taskRequest = modelMapper.map(taskDTO, Task.class);
+
+        // save Task entity to DB
+        Task task = taskService.saveTask(taskRequest);
+
+        // convert entity to DTO
+        TaskDTO taskResponse = modelMapper.map(task, TaskDTO.class);
+
+        // return the DTO as a response entity
+        return new ResponseEntity<>(taskResponse, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseBody
+    public ResponseEntity<TaskDTO> deleteTask(@PathVariable UUID id) {
+
+        // get the task entity
+        Task task = taskService.getSingleTask(id);
+
+        // handle if task is null
+        if (task == null) {
+            throw new EntityNotFoundException();
+        }
+
+        // convert entity to DTO
+        TaskDTO taskDTO = modelMapper.map(task, TaskDTO.class);
+
+        // return the DTO as a response entity
+        return new ResponseEntity<>(taskDTO, HttpStatus.OK);
+    }
+
+    @PutMapping("{id}")
+    @ResponseBody
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable UUID id) {
+
+        // get the task entity
+        Task task = taskService.getSingleTask(id);
+
+        // handle if task is null
+        if (task == null) {
+            throw new EntityNotFoundException();
+        }
+
+        // convert entity to DTO
+        TaskDTO taskDTO = modelMapper.map(task, TaskDTO.class);
+
+        // return the DTO as a response entity
+        return new ResponseEntity<>(taskDTO, HttpStatus.OK);
+    }
 }
