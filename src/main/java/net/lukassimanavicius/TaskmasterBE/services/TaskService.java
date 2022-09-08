@@ -63,6 +63,12 @@ public class TaskService {
 
             // set the category ID to the task entity
             taskToSave.getCategory().setCategoryID(categoryID);
+        } else {
+            // set default category if none was given
+            Category category = new Category();
+            category.setCategoryName("Other");
+            category.setCategoryID(12);
+            taskToSave.setCategory(category);
         }
 
         Task task = taskRepository.save(taskToSave);

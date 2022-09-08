@@ -50,7 +50,6 @@ public class Task {
     private LocalDate taskDate;
 
     @ManyToOne
-    @Generated(GenerationTime.INSERT)
     @JoinColumn(name = "category_id")
     private Category category;
 }
