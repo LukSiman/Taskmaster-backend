@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -261,16 +262,33 @@ public class HTTPTesting {
     @Test
     public void CreateNewTaskFullTest() throws Exception {
 
-        //TODO: Finish this
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTaskName("Control the world");
         taskDTO.setTaskOrder(1);
-        taskDTO.setTaskDate(LocalDate.now());
+        taskDTO.setTaskNote("Testing testing 123!");
+        taskDTO.setTaskStatus(1);
+        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
+        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
+        taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
+        taskDTO.setCategoryName("Medical");
 
-        ResultActions response = mockMvc.perform(post("/save"));
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
 
         response.andExpect(status().isCreated())
                 .andDo(print())
-                .andExpect(content().string("Bad id, please try again."));
+                .andExpect(jsonPath("taskName", is("Control the world")))
+                .andExpect(jsonPath("taskOrder", is(1)))
+                .andExpect(jsonPath("taskNote", is("Testing testing 123!")))
+                .andExpect(jsonPath("taskStatus", is(1)))
+                .andExpect(jsonPath("taskStartTime", is("15:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("19:35:00")))
+                .andExpect(jsonPath("taskDate", is("2022-12-25")))
+                .andExpect(jsonPath("categoryName", is("Medical")));
     }
 }
