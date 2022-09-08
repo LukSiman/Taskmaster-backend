@@ -2,15 +2,18 @@ package net.lukassimanavicius.TaskmasterBE.entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "task")
+@DynamicInsert
 @Getter
 @Setter
 public class Task {
@@ -42,10 +45,12 @@ public class Task {
     @Column(name = "task_end_time")
     private LocalTime taskEndTime;
 
+    @Generated(GenerationTime.INSERT)
     @Column(name = "task_date")
     private LocalDate taskDate;
 
     @ManyToOne
+    @Generated(GenerationTime.INSERT)
     @JoinColumn(name = "category_id")
     private Category category;
 }
