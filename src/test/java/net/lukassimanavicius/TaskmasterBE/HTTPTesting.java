@@ -1,19 +1,23 @@
 package net.lukassimanavicius.TaskmasterBE;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import net.lukassimanavicius.TaskmasterBE.dto.TaskDTO;
 import net.lukassimanavicius.TaskmasterBE.services.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -225,5 +229,46 @@ public class HTTPTesting {
         response.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$.size()", is(26)));
+    }
+
+    @Test
+    public void CreateNewTaskMinimalTest() throws Exception {
+        TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setTaskName("Control the world");
+        taskDTO.setTaskOrder(1);
+        taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("Control the world")))
+                .andExpect(jsonPath("taskOrder", is(1)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus").doesNotExist())
+                .andExpect(jsonPath("taskStartTime").doesNotExist())
+                .andExpect(jsonPath("taskEndTime").doesNotExist())
+                .andExpect(jsonPath("taskDate", is("2022-12-25")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+    }
+
+    @Test
+    public void CreateNewTaskFullTest() throws Exception {
+        TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setTaskName("Control the world");
+        taskDTO.setTaskOrder(1);
+        taskDTO.setTaskDate(LocalDate.now());
+
+        ResultActions response = mockMvc.perform(post("/save"));
+
+        response.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(content().string("Bad id, please try again."));
     }
 }
