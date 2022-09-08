@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -59,6 +60,10 @@ public class TaskController {
         // get the task entity
         Task task = taskService.getSingleTask(id);
 
+        if(task == null){
+            throw new EntityNotFoundException();
+        }
+
         // convert entity to DTO
         TaskDTO taskDTO = modelMapper.map(task, TaskDTO.class);
 
@@ -69,7 +74,7 @@ public class TaskController {
     /**
      * Handles exceptions for bad IDs
      */
-    @ExceptionHandler({MethodArgumentTypeMismatchException.class, EntityNotFoundException.class})
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, EntityNotFoundException.class, MissingPathVariableException.class})
     private ResponseEntity handleBadID() {
         return ResponseEntity.badRequest().body("Bad id, please try again.");
     }
