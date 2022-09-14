@@ -52,7 +52,7 @@ public class TaskService {
         taskToSave.setTaskUUID(UUID.randomUUID());
 
         // set current date as default if no date is given
-        if(taskToSave.getTaskDate() == null){
+        if (taskToSave.getTaskDate() == null) {
             taskToSave.setTaskDate(LocalDate.now());
         }
 
@@ -80,5 +80,19 @@ public class TaskService {
         Task task = taskRepository.save(taskToSave);
 
         return task;
+    }
+
+    /**
+     * Deletes the task from the database and returns the name
+     */
+    @Transactional
+    public String deleteTask(UUID id) {
+        // get the task name
+        String taskName = taskRepository.findByTaskUUID(id).getTaskName();
+
+        // delete the task from DB
+        taskRepository.deleteByTaskUUID(id);
+
+        return taskName + " has been deleted successfully!";
     }
 }
