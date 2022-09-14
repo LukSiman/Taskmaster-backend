@@ -111,6 +111,14 @@ public class TaskController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
+    /**
+     * Handles a bad delete path
+     */
+    @DeleteMapping("")
+    public void badDeletePath() {
+        throw new EntityNotFoundException();
+    }
+
     @PutMapping("{id}")
     @ResponseBody
     public ResponseEntity<TaskDTO> updateTask(@PathVariable UUID id) {
