@@ -328,20 +328,41 @@ public class HTTPTesting {
         mapper.registerModule(new JavaTimeModule());
         String jsonTask = mapper.writeValueAsString(taskDTO);
 
-        ResultActions response = mockMvc.perform(post("/tasks/save")
+        mockMvc.perform(post("/tasks/save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonTask));
 
-        response.andExpect(status().isCreated())
-                .andDo(print())
-                .andExpect(jsonPath("taskName", is("Control the world")))
-                .andExpect(jsonPath("taskOrder", is(1)))
-                .andExpect(jsonPath("taskNote").doesNotExist())
-                .andExpect(jsonPath("taskStatus").doesNotExist())
-                .andExpect(jsonPath("taskStartTime").doesNotExist())
-                .andExpect(jsonPath("taskEndTime").doesNotExist())
-                .andExpect(jsonPath("taskDate", is("2022-12-25")))
-                .andExpect(jsonPath("categoryName", is("Other")));
+        ResultActions response = mockMvc.perform(delete("/tasks/"));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+
+        response = mockMvc.perform(delete("/tasks/" + ""));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+
+        response = mockMvc.perform(delete("/tasks/" + " "));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+
+        response = mockMvc.perform(delete("/tasks/" + 9));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+
+        response = mockMvc.perform(delete("/tasks/" + "9"));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+
+        response = mockMvc.perform(delete("/tasks/" + "c"));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+
+        response = mockMvc.perform(delete("/tasks/" + "70305a91-33b6-11ed-ac36-fcaa14e3878f"));
 
         response.andExpect(status().isBadRequest())
                 .andDo(print()).andExpect(content().string("Bad id, please try again."));
