@@ -73,14 +73,6 @@ public class TaskController {
     }
 
     /**
-     * Handles exceptions for bad IDs
-     */
-    @ExceptionHandler({MethodArgumentTypeMismatchException.class, EntityNotFoundException.class, MissingPathVariableException.class})
-    private ResponseEntity handleBadID() {
-        return ResponseEntity.badRequest().body("Bad id, please try again.");
-    }
-
-    /**
      * Saves the task to the database
      */
     @PostMapping("save")
@@ -100,23 +92,23 @@ public class TaskController {
         return new ResponseEntity<>(taskResponse, HttpStatus.CREATED);
     }
 
+    /**
+     * Deletes the task from the database
+     */
     @DeleteMapping("{id}")
     @ResponseBody
-    public ResponseEntity<TaskDTO> deleteTask(@PathVariable UUID id) {
+    public ResponseEntity deleteTask(@PathVariable UUID id) {
 
-        // get the task entity
-        Task task = taskService.getSingleTask(id);
-
-        // handle if task is null
-        if (task == null) {
+        // delete the task object from DB, throw exception if bad id
+        String message = "";
+        try {
+            message = taskService.deleteTask(id);
+        } catch (Exception exc) {
             throw new EntityNotFoundException();
         }
 
-        // convert entity to DTO
-        TaskDTO taskDTO = modelMapper.map(task, TaskDTO.class);
-
-        // return the DTO as a response entity
-        return new ResponseEntity<>(taskDTO, HttpStatus.OK);
+        // response message
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PutMapping("{id}")
@@ -136,5 +128,13 @@ public class TaskController {
 
         // return the DTO as a response entity
         return new ResponseEntity<>(taskDTO, HttpStatus.OK);
+    }
+
+    /**
+     * Handles exceptions for bad IDs
+     */
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, EntityNotFoundException.class, MissingPathVariableException.class})
+    private ResponseEntity handleBadID() {
+        return ResponseEntity.badRequest().body("Bad id, please try again.");
     }
 }
