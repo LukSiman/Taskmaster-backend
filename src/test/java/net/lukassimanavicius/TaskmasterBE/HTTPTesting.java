@@ -2,6 +2,7 @@ package net.lukassimanavicius.TaskmasterBE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.jayway.jsonpath.JsonPath;
 import net.lukassimanavicius.TaskmasterBE.dto.TaskDTO;
 import net.lukassimanavicius.TaskmasterBE.services.CategoryService;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
@@ -17,8 +19,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -290,5 +291,59 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskEndTime", is("19:35:00")))
                 .andExpect(jsonPath("taskDate", is("2022-12-25")))
                 .andExpect(jsonPath("categoryName", is("Medical")));
+    }
+
+    @Test
+    public void deleteTaskGood() throws Exception {
+        TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setTaskName("Control the world");
+        taskDTO.setTaskOrder(1);
+        taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String jsonTask = mapper.writeValueAsString(taskDTO);
+
+        MvcResult response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask)).andReturn();
+
+        String uuid = JsonPath.read(response.getResponse().getContentAsString(), "taskUUID");
+
+        ResultActions deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().string(taskDTO.getTaskName() + " has been deleted successfully!"));
+    }
+
+    @Test
+    public void deleteTaskBadID() throws Exception {
+        TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setTaskName("Control the world");
+        taskDTO.setTaskOrder(1);
+        taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("Control the world")))
+                .andExpect(jsonPath("taskOrder", is(1)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus").doesNotExist())
+                .andExpect(jsonPath("taskStartTime").doesNotExist())
+                .andExpect(jsonPath("taskEndTime").doesNotExist())
+                .andExpect(jsonPath("taskDate", is("2022-12-25")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Bad id, please try again."));
     }
 }
