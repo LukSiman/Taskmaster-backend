@@ -7,14 +7,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import java.util.*;
 
 @RestController
 @RequestMapping("/tasks")
@@ -77,7 +80,7 @@ public class TaskController {
      */
     @PostMapping("save")
     @ResponseBody
-    public ResponseEntity<TaskDTO> addTask(@RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<TaskDTO> addTask(@Valid @RequestBody TaskDTO taskDTO) {
 
         // convert DTO to entity
         Task taskRequest = modelMapper.map(taskDTO, Task.class);
@@ -146,5 +149,18 @@ public class TaskController {
     @ExceptionHandler({MethodArgumentTypeMismatchException.class, EntityNotFoundException.class, MissingPathVariableException.class})
     private ResponseEntity handleBadID() {
         return ResponseEntity.badRequest().body("Bad id, please try again.");
+    }
+
+    /**
+     * Handles exceptions for validation
+     */
+    @ExceptionHandler({ConstraintViolationException.class})
+    private ResponseEntity handleBadValidation(ConstraintViolationException constraint) {
+        String message = "";
+        for(ConstraintViolation violation : constraint.getConstraintViolations()){
+            message = violation.getMessage();
+        }
+
+        return ResponseEntity.badRequest().body(message);
     }
 }
