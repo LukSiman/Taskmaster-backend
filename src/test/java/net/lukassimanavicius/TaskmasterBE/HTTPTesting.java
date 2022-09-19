@@ -496,6 +496,17 @@ public class HTTPTesting {
                 .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
 
         taskDTO.setTaskName("");
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
+
+        taskDTO.setTaskName(null);
+        jsonTask = mapper.writeValueAsString(taskDTO);
 
         response = mockMvc.perform(post("/tasks/save")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -505,6 +516,7 @@ public class HTTPTesting {
                 .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
 
         taskDTO.setTaskName(" ");
+        jsonTask = mapper.writeValueAsString(taskDTO);
 
         response = mockMvc.perform(post("/tasks/save")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -514,6 +526,7 @@ public class HTTPTesting {
                 .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
 
         taskDTO.setTaskName("A");
+        jsonTask = mapper.writeValueAsString(taskDTO);
 
         response = mockMvc.perform(post("/tasks/save")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -521,6 +534,49 @@ public class HTTPTesting {
 
         response.andExpect(status().isBadRequest())
                 .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
+
+        taskDTO.setTaskName("Control the world");
+        taskDTO.setTaskOrder(0);
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Invalid order!"));
+
+        taskDTO.setTaskOrder(-1);
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Invalid order!"));
+
+        taskDTO.setTaskOrder(null);
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Invalid order!"));
+
+        taskDTO.setTaskOrder(1);
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        //TODO: Finish off
+
+//        taskDTO.setTaskNote("Testing testing 123!");
+//        taskDTO.setTaskStatus(1);
+//        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
+//        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
+//        taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
+//        taskDTO.setCategoryName("Medical");
     }
 
     //TODO: Test end time before start time; non existing dates; non existing hours; non existing category
