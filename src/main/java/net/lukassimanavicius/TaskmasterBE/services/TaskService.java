@@ -110,6 +110,7 @@ public class TaskService {
      */
     private Category categoryProcessing(Task task){
         Category category = new Category();
+
         // extract category if task entity has it
         if (task.getCategory() != null) {
             // extract the category name from the request
@@ -117,8 +118,11 @@ public class TaskService {
 
             // find the category by name
             category = categoryRepository.findByCategoryName(categoryName);
-        } else {
-            // set default category if none was given
+        }
+
+        if(task.getCategory() == null || category == null) {
+            // set default category if none was given or invalid category provided
+            category = new Category();
             category.setCategoryName(DEFAULT_CATEGORY_NAME);
             category.setCategoryID(DEFAULT_CATEGORY_ID);
         }
