@@ -115,27 +115,29 @@ public class TaskController {
      * Handles a bad delete path
      */
     @DeleteMapping("")
+    @ResponseBody
     public void badDeletePath() {
         throw new EntityNotFoundException();
     }
 
+    /**
+     * Updates the task with new data
+     */
     @PutMapping("{id}")
     @ResponseBody
-    public ResponseEntity<TaskDTO> updateTask(@PathVariable UUID id) {
+    public ResponseEntity<TaskDTO> updateTask(@RequestBody TaskDTO taskDTO) {
 
-        // get the task entity
-        Task task = taskService.getSingleTask(id);
+        // convert DTO to entity
+        Task taskRequest = modelMapper.map(taskDTO, Task.class);
 
-        // handle if task is null
-        if (task == null) {
-            throw new EntityNotFoundException();
-        }
+        // save Task entity to DB
+        Task task = taskService.updateTask(taskRequest);
 
         // convert entity to DTO
-        TaskDTO taskDTO = modelMapper.map(task, TaskDTO.class);
+        TaskDTO taskResponse = modelMapper.map(task, TaskDTO.class);
 
         // return the DTO as a response entity
-        return new ResponseEntity<>(taskDTO, HttpStatus.OK);
+        return new ResponseEntity<>(taskResponse, HttpStatus.OK);
     }
 
     /**
