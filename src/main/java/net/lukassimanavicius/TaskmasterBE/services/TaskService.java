@@ -9,11 +9,15 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class TaskService {
+
+    static final int DEFAULT_CATEGORY_ID = 12;
+    static final String DEFAULT_CATEGORY_NAME = "Other";
 
     @Autowired
     private final TaskRepository taskRepository;
@@ -43,7 +47,7 @@ public class TaskService {
     }
 
     /**
-     * Saves the task to the database
+     * Saves the task to the database and returns it
      */
     @Transactional
     public Task saveTask(Task taskToSave) {
@@ -56,26 +60,9 @@ public class TaskService {
             taskToSave.setTaskDate(LocalDate.now());
         }
 
-        // extract category if task entity has it
-        if (taskToSave.getCategory() != null) {
-            // extract the category name from the request
-            String categoryName = taskToSave.getCategory().getCategoryName();
-
-            // find the category by name
-            Category category = categoryRepository.findByCategoryName(categoryName);
-
-            // extract the ID from the category
-            Integer categoryID = category.getCategoryID();
-
-            // set the category ID to the task entity
-            taskToSave.getCategory().setCategoryID(categoryID);
-        } else {
-            // set default category if none was given
-            Category category = new Category();
-            category.setCategoryName("Other");
-            category.setCategoryID(12);
-            taskToSave.setCategory(category);
-        }
+        // set the category
+        Category category = categoryProcessing(taskToSave);
+        taskToSave.setCategory(category);
 
         Task task = taskRepository.save(taskToSave);
 
@@ -94,5 +81,47 @@ public class TaskService {
         taskRepository.deleteByTaskUUID(id);
 
         return taskName + " has been deleted successfully!";
+    }
+
+    /**
+     * Updates the task in DB and returns it
+     */
+    @Transactional
+    public Task updateTask(Task taskUpdateDetails) {
+        // Get the task object that will be updated
+        Task taskToUpdate = taskRepository.findByTaskUUID(taskUpdateDetails.getTaskUUID());
+
+        // Update fields with new data
+        taskToUpdate.setTaskName(taskUpdateDetails.getTaskName());
+        taskToUpdate.setTaskOrder(taskUpdateDetails.getTaskOrder());
+        taskToUpdate.setTaskNote(taskUpdateDetails.getTaskNote());
+        taskToUpdate.setTaskStatus(taskUpdateDetails.getTaskStatus());
+        taskToUpdate.setTaskStartTime(taskUpdateDetails.getTaskStartTime());
+        taskToUpdate.setTaskEndTime(taskUpdateDetails.getTaskEndTime());
+        taskToUpdate.setTaskDate(taskUpdateDetails.getTaskDate());
+        Category category = categoryProcessing(taskUpdateDetails);
+        taskToUpdate.setCategory(category);
+
+        return taskRepository.save(taskToUpdate);
+    }
+
+    /**
+     * Handle categories when saving and updating
+     */
+    private Category categoryProcessing(Task task){
+        Category category = new Category();
+        // extract category if task entity has it
+        if (task.getCategory() != null) {
+            // extract the category name from the request
+            String categoryName = task.getCategory().getCategoryName();
+
+            // find the category by name
+            category = categoryRepository.findByCategoryName(categoryName);
+        } else {
+            // set default category if none was given
+            category.setCategoryName(DEFAULT_CATEGORY_NAME);
+            category.setCategoryID(DEFAULT_CATEGORY_ID);
+        }
+        return category;
     }
 }
