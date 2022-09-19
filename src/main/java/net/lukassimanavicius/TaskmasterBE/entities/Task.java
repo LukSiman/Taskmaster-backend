@@ -7,6 +7,7 @@ import org.hibernate.annotations.*;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class Task {
     private UUID taskUUID;
 
     @Column(name = "task_name")
+    @Size(min=2, max=50, message = "Name must be between 2 and 50 characters!")
     private String taskName;
 
     @Column(name = "task_order")
