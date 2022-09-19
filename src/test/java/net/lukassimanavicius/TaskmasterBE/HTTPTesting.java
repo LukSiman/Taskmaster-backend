@@ -34,7 +34,7 @@ public class HTTPTesting {
     private CategoryService categoryService;
 
     @Test
-    public void GetSingleCategoryTest() throws Exception {
+    public void getSingleCategoryTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/categories/{id}", 1));
 
         response.andExpect(status().isOk())
@@ -43,7 +43,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetSingleBadCategoryTest() throws Exception {
+    public void getSingleBadCategoryTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/categories/{id}", 99));
 
         response.andExpect(status().isBadRequest())
@@ -51,7 +51,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetSingleEmptyCategoryTest() throws Exception {
+    public void getSingleEmptyCategoryTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/categories/{id}", " "));
 
         response.andExpect(status().isBadRequest())
@@ -59,7 +59,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetSingleNotNumberCategoryTest() throws Exception {
+    public void getSingleNotNumberCategoryTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/categories/{id}", "c"));
 
         response.andExpect(status().isBadRequest())
@@ -67,7 +67,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetSeveralSingleCategoryTest() throws Exception {
+    public void getSeveralSingleCategoryTest() throws Exception {
         ResultActions response1 = mockMvc.perform(get("/categories/{id}", 2));
         ResultActions response2 = mockMvc.perform(get("/categories/{id}", 4));
         ResultActions response3 = mockMvc.perform(get("/categories/{id}", 6));
@@ -97,7 +97,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetAllCategoryTest() throws Exception {
+    public void getAllCategoryTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/categories"));
 
         response.andExpect(status().isOk())
@@ -107,7 +107,7 @@ public class HTTPTesting {
 
 
     @Test
-    public void GetSingleTaskTest() throws Exception {
+    public void getSingleTaskTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/tasks/{id}", "e7b6a29c-37c6-11ed-a608-fcaa14e3878f"));
 
         response.andExpect(status().isOk())
@@ -123,7 +123,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetSingleBadTaskTest() throws Exception {
+    public void getSingleBadTaskTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/tasks/{id}", 99));
 
         response.andExpect(status().isBadRequest())
@@ -131,7 +131,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetSingleRandomIDTaskTest() throws Exception {
+    public void getSingleRandomIDTaskTest() throws Exception {
         UUID randomID = UUID.randomUUID();
         System.out.println(randomID);
         ResultActions response = mockMvc.perform(get("/tasks/{id}", randomID));
@@ -141,7 +141,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetSingleEmptyTaskTest() throws Exception {
+    public void getSingleEmptyTaskTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/tasks/{id}", " "));
 
         response.andExpect(status().isBadRequest())
@@ -149,7 +149,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetSingleNotNumberTaskTest() throws Exception {
+    public void getSingleNotNumberTaskTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/tasks/{id}", "c"));
 
         response.andExpect(status().isBadRequest())
@@ -157,7 +157,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetSeveralSingleTaskTest() throws Exception {
+    public void getSeveralSingleTaskTest() throws Exception {
         ResultActions response1 = mockMvc.perform(get("/tasks/{id}", "e7b8859e-37c6-11ed-a608-fcaa14e3878f")); //2
         ResultActions response2 = mockMvc.perform(get("/tasks/{id}", "e7c0f9e2-37c6-11ed-a608-fcaa14e3878f")); //8
         ResultActions response3 = mockMvc.perform(get("/tasks/{id}", "e7ca2d84-37c6-11ed-a608-fcaa14e3878f")); //14
@@ -195,7 +195,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void GetAllTasksTest() throws Exception {
+    public void getAllTasksTest() throws Exception {
         ResultActions response = mockMvc.perform(get("/tasks"));
 
         response.andExpect(status().isOk())
@@ -204,7 +204,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void CreateNewTaskMinimalTest() throws Exception {
+    public void createNewTaskMinimalTest() throws Exception {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTaskName("Control the world");
         taskDTO.setTaskOrder(1);
@@ -231,8 +231,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void CreateNewTaskFullTest() throws Exception {
-
+    public void createNewTaskFullTest() throws Exception {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTaskName("Control the world");
         taskDTO.setTaskOrder(1);
@@ -471,6 +470,57 @@ public class HTTPTesting {
         deleteResponse.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().string(taskDTO.getTaskName() + " has been deleted successfully!"));
+    }
+
+    @Test
+    public void badDataTest() throws Exception {
+        TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setTaskName("g6ERzuQC9uSJ2K5gjgOxE8JwpfdxHEMgObOH0K9pXRx9EFZQe9MV");
+        taskDTO.setTaskOrder(1);
+        taskDTO.setTaskNote("Testing testing 123!");
+        taskDTO.setTaskStatus(1);
+        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
+        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
+        taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
+        taskDTO.setCategoryName("Test");
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
+
+        taskDTO.setTaskName("");
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
+
+        taskDTO.setTaskName(" ");
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
+
+        taskDTO.setTaskName("A");
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
     }
 
     //TODO: Test end time before start time; non existing dates; non existing hours; non existing category
