@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,13 +62,5 @@ public class CategoryController {
 
         // return the DTO as a response entity
         return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
-    }
-
-    /**
-     * Handles exceptions for bad IDs
-     */
-    @ExceptionHandler({MethodArgumentTypeMismatchException.class, EntityNotFoundException.class})
-    private ResponseEntity handleBadID() {
-        return ResponseEntity.badRequest().body("Bad id, please try again.");
     }
 }
