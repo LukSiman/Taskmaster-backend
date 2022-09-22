@@ -17,17 +17,10 @@ public class ExceptionManager {
     /**
      * Handles exceptions for bad IDs
      */
-    @ExceptionHandler({EntityNotFoundException.class, MissingPathVariableException.class})
+    @ExceptionHandler({EntityNotFoundException.class, MissingPathVariableException.class, MethodArgumentTypeMismatchException.class})
     private ResponseEntity handleBadID() {
-        return ResponseEntity.badRequest().body("Bad id, please try again!");
-    }
-
-    /**
-     * Handles exceptions for bad types
-     */
-    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
-    private ResponseEntity handleTypeExceptions() {
-        return ResponseEntity.badRequest().body("Wrong input, please try again!");
+        String message = "Bad id, please try again!";
+        return ResponseEntity.badRequest().body(message);
     }
 
     /**
@@ -35,8 +28,17 @@ public class ExceptionManager {
      */
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity handleDateParsing(DateTimeParseException exception) {
-        String message = "Invalid format: " + exception.getParsedString() + " please try again!" ;
+        String message = "Invalid format: " + exception.getParsedString() + ", please try again!";
 
+        return ResponseEntity.badRequest().body(message);
+    }
+
+    /**
+     * Handles bad time values exception
+     */
+    @ExceptionHandler(BadTimeException.class)
+    public ResponseEntity handleBadTimeValues(BadTimeException exception) {
+        String message = exception.getMessage();
         return ResponseEntity.badRequest().body(message);
     }
 
