@@ -36,7 +36,7 @@ public class Task {
     private String taskName;
 
     @Column(name = "task_order")
-    @NotNull(message = "Invalid order!")
+    @NotNull(message = "Invalid order value!")
     @Min(value = 1, message = "Invalid order value!")
     private Integer taskOrder;
 
@@ -57,12 +57,9 @@ public class Task {
     private LocalTime taskEndTime;
 
     @Column(name = "task_date")
-//    @DateTimeFormat(pattern = "yyyy/mm/dd")
-//    @Temporal(TemporalType.DATE)
     private LocalDate taskDate;
 
     @ManyToOne
-//    @NotNull
     @JoinColumn(name = "category_id")
     private Category category;
 }
