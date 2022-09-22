@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
@@ -38,29 +37,28 @@ public class Task {
 
     @Column(name = "task_order")
     @NotNull(message = "Invalid order!")
-    @Min(value = 1, message = "Invalid order!")
+    @Min(value = 1, message = "Invalid order value!")
     private Integer taskOrder;
 
     @Column(name = "task_note")
+    @Size(max = 200, message = "Note cannot be longer than 200 characters!")
     private String taskNote;
 
-//    @Min(value = 0, message = "Status cannot be lower than 0")
-//    @Max(value = 1, message = "Status cannot be higher than 1")
-//    @NotNull
     @Column(name = "task_status")
+    @Min(value = 0, message = "Status has to be 0 or 1!")
+    @Max(value = 1, message = "Status has to be 0 or 1!")
+    @NotNull(message = "Status cannot be null!")
     private Integer taskStatus;
 
-//    @Temporal(TemporalType.TIME)
     @Column(name = "task_start_time")
     private LocalTime taskStartTime;
 
-//    @Temporal(TemporalType.TIME)
     @Column(name = "task_end_time")
     private LocalTime taskEndTime;
 
+    @Column(name = "task_date")
 //    @DateTimeFormat(pattern = "yyyy/mm/dd")
 //    @Temporal(TemporalType.DATE)
-    @Column(name = "task_date")
     private LocalDate taskDate;
 
     @ManyToOne
