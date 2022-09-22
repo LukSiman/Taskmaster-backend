@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jayway.jsonpath.JsonPath;
 import net.lukassimanavicius.TaskmasterBE.dto.TaskDTO;
 import net.lukassimanavicius.TaskmasterBE.services.CategoryService;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -47,7 +48,7 @@ public class HTTPTesting {
         ResultActions response = mockMvc.perform(get("/categories/{id}", 99));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
     }
 
     @Test
@@ -55,7 +56,7 @@ public class HTTPTesting {
         ResultActions response = mockMvc.perform(get("/categories/{id}", " "));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Wrong input, please try again!"));
     }
 
     @Test
@@ -63,7 +64,7 @@ public class HTTPTesting {
         ResultActions response = mockMvc.perform(get("/categories/{id}", "c"));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Wrong input, please try again!"));
     }
 
     @Test
@@ -127,7 +128,7 @@ public class HTTPTesting {
         ResultActions response = mockMvc.perform(get("/tasks/{id}", 99));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
     }
 
     @Test
@@ -137,7 +138,7 @@ public class HTTPTesting {
         ResultActions response = mockMvc.perform(get("/tasks/{id}", randomID));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
     }
 
     @Test
@@ -145,7 +146,7 @@ public class HTTPTesting {
         ResultActions response = mockMvc.perform(get("/tasks/{id}", " "));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
     }
 
     @Test
@@ -153,7 +154,7 @@ public class HTTPTesting {
         ResultActions response = mockMvc.perform(get("/tasks/{id}", "c"));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
     }
 
     @Test
@@ -304,37 +305,37 @@ public class HTTPTesting {
         ResultActions response = mockMvc.perform(delete("/tasks/"));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
 
         response = mockMvc.perform(delete("/tasks/" + ""));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
 
         response = mockMvc.perform(delete("/tasks/" + " "));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
 
         response = mockMvc.perform(delete("/tasks/" + 9));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
 
         response = mockMvc.perform(delete("/tasks/" + "9"));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
 
         response = mockMvc.perform(delete("/tasks/" + "c"));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
 
         response = mockMvc.perform(delete("/tasks/" + "70305a91-33b6-11ed-ac36-fcaa14e3878f"));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Bad id, please try again."));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
     }
 
     @Test
@@ -544,7 +545,7 @@ public class HTTPTesting {
                 .content(jsonTask));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Invalid order!"));
+                .andDo(print()).andExpect(content().string("Invalid order value!"));
 
         taskDTO.setTaskOrder(-1);
         jsonTask = mapper.writeValueAsString(taskDTO);
@@ -554,7 +555,7 @@ public class HTTPTesting {
                 .content(jsonTask));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Invalid order!"));
+                .andDo(print()).andExpect(content().string("Invalid order value!"));
 
         taskDTO.setTaskOrder(null);
         jsonTask = mapper.writeValueAsString(taskDTO);
@@ -564,20 +565,84 @@ public class HTTPTesting {
                 .content(jsonTask));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Invalid order!"));
+                .andDo(print()).andExpect(content().string("Invalid order value!"));
 
         taskDTO.setTaskOrder(1);
+        taskDTO.setTaskNote("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qua");
         jsonTask = mapper.writeValueAsString(taskDTO);
 
-        //TODO: Finish off
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
 
-//        taskDTO.setTaskNote("Testing testing 123!");
-//        taskDTO.setTaskStatus(1);
-//        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
-//        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
-//        taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Note cannot be longer than 200 characters!"));
+
+        taskDTO.setTaskNote("Testing testing 123!");
+        taskDTO.setTaskStatus(null);
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status cannot be null!"));
+
+        taskDTO.setTaskStatus(-1);
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
+
+        taskDTO.setTaskStatus(-99);
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
+
+        taskDTO.setTaskStatus(2);
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
+
+        taskDTO.setTaskStatus(99);
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
+
+        taskDTO.setTaskStatus(1);
+        taskDTO.setTaskStartTime(LocalTime.parse("19:00:00")); // FINISH
+        taskDTO.setTaskEndTime(LocalTime.parse("15:00:00")); // FINISH
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
+
+        //TODO: Test end time before start time; non existing category
+
 //        taskDTO.setCategoryName("Medical");
     }
-
-    //TODO: Test end time before start time; non existing dates; non existing hours; non existing category
 }
