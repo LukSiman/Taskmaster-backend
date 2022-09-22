@@ -2,6 +2,7 @@ package net.lukassimanavicius.TaskmasterBE.services;
 
 import net.lukassimanavicius.TaskmasterBE.entities.Category;
 import net.lukassimanavicius.TaskmasterBE.entities.Task;
+import net.lukassimanavicius.TaskmasterBE.exceptions.BadTimeException;
 import net.lukassimanavicius.TaskmasterBE.repositories.CategoryRepository;
 import net.lukassimanavicius.TaskmasterBE.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,11 @@ public class TaskService {
         // create a UUID for the task
         taskToSave.setTaskUUID(UUID.randomUUID());
 
+        // handles correctness for start and end times
+        LocalTime startTime = taskToSave.getTaskStartTime();
+        LocalTime endTime = taskToSave.getTaskEndTime();
+        timeProcessor(startTime, endTime);
+
         // set current date as default if no date is given
         if (taskToSave.getTaskDate() == null) {
             taskToSave.setTaskDate(LocalDate.now());
@@ -96,6 +102,12 @@ public class TaskService {
         taskToUpdate.setTaskOrder(taskUpdateDetails.getTaskOrder());
         taskToUpdate.setTaskNote(taskUpdateDetails.getTaskNote());
         taskToUpdate.setTaskStatus(taskUpdateDetails.getTaskStatus());
+
+        // handles correctness for start and end times
+        LocalTime startTime = taskToUpdate.getTaskStartTime();
+        LocalTime endTime = taskToUpdate.getTaskEndTime();
+        timeProcessor(startTime, endTime);
+
         taskToUpdate.setTaskStartTime(taskUpdateDetails.getTaskStartTime());
         taskToUpdate.setTaskEndTime(taskUpdateDetails.getTaskEndTime());
         taskToUpdate.setTaskDate(taskUpdateDetails.getTaskDate());
@@ -108,7 +120,7 @@ public class TaskService {
     /**
      * Handle categories when saving and updating
      */
-    private Category categoryProcessing(Task task){
+    private Category categoryProcessing(Task task) {
         Category category = new Category();
 
         // extract category if task entity has it
@@ -120,12 +132,27 @@ public class TaskService {
             category = categoryRepository.findByCategoryName(categoryName);
         }
 
-        if(task.getCategory() == null || category == null) {
+        if (task.getCategory() == null || category == null) {
             // set default category if none was given or invalid category provided
             category = new Category();
             category.setCategoryName(DEFAULT_CATEGORY_NAME);
             category.setCategoryID(DEFAULT_CATEGORY_ID);
         }
         return category;
+    }
+
+    /**
+     * Checks if start time and end time is set up correctly
+     */
+    private void timeProcessor(LocalTime startTime, LocalTime endTime) {
+        // throw exception if end time is before start time
+        if (startTime != null && endTime != null) {
+            if (!startTime.isBefore(endTime)) {
+                throw new BadTimeException("End time is before the start time!");
+            }
+            // throw exception if only end time has been entered
+        } else if (startTime == null && endTime != null) {
+            throw new BadTimeException("You're missing start time!");
+        }
     }
 }
