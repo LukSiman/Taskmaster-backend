@@ -56,7 +56,7 @@ public class HTTPTesting {
         ResultActions response = mockMvc.perform(get("/categories/{id}", " "));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Wrong input, please try again!"));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class HTTPTesting {
         ResultActions response = mockMvc.perform(get("/categories/{id}", "c"));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Wrong input, please try again!"));
+                .andDo(print()).andExpect(content().string("Bad id, please try again!"));
     }
 
     @Test
@@ -209,6 +209,7 @@ public class HTTPTesting {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTaskName("Control the world");
         taskDTO.setTaskOrder(1);
+        taskDTO.setTaskStatus(0);
         taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
 
         ObjectMapper mapper = new ObjectMapper();
@@ -224,7 +225,7 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskName", is("Control the world")))
                 .andExpect(jsonPath("taskOrder", is(1)))
                 .andExpect(jsonPath("taskNote").doesNotExist())
-                .andExpect(jsonPath("taskStatus").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
                 .andExpect(jsonPath("taskStartTime").doesNotExist())
                 .andExpect(jsonPath("taskEndTime").doesNotExist())
                 .andExpect(jsonPath("taskDate", is("2022-12-25")))
@@ -268,6 +269,7 @@ public class HTTPTesting {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTaskName("Control the world");
         taskDTO.setTaskOrder(1);
+        taskDTO.setTaskStatus(1);
         taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
 
         ObjectMapper mapper = new ObjectMapper();
@@ -630,8 +632,8 @@ public class HTTPTesting {
                 .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
 
         taskDTO.setTaskStatus(1);
-        taskDTO.setTaskStartTime(LocalTime.parse("19:00:00")); // FINISH
-        taskDTO.setTaskEndTime(LocalTime.parse("15:00:00")); // FINISH
+        taskDTO.setTaskStartTime(LocalTime.parse("19:00:00"));
+        taskDTO.setTaskEndTime(LocalTime.parse("15:00:00"));
         jsonTask = mapper.writeValueAsString(taskDTO);
 
         response = mockMvc.perform(post("/tasks/save")
@@ -639,10 +641,69 @@ public class HTTPTesting {
                 .content(jsonTask));
 
         response.andExpect(status().isBadRequest())
-                .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
+                .andDo(print()).andExpect(content().string("End time is before the start time!"));
 
-        //TODO: Test end time before start time; non existing category
+        taskDTO.setTaskStartTime(LocalTime.parse("12:00:00"));
+        taskDTO.setCategoryName("Test");
 
-//        taskDTO.setCategoryName("Medical");
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO.setCategoryName("");
+
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO.setCategoryName(" ");
+
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO.setCategoryName("123456");
+
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO.setCategoryName(null);
+
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        response = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("categoryName", is("Other")));
     }
+
+    //TODO: Test badData with PUT
 }
