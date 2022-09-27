@@ -5,7 +5,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jayway.jsonpath.JsonPath;
 import net.lukassimanavicius.TaskmasterBE.dto.TaskDTO;
 import net.lukassimanavicius.TaskmasterBE.services.CategoryService;
-import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -109,7 +108,7 @@ public class HTTPTesting {
 
     @Test
     public void getSingleTaskTest() throws Exception {
-        ResultActions response = mockMvc.perform(get("/tasks/{id}", "e7b6a29c-37c6-11ed-a608-fcaa14e3878f"));
+        ResultActions response = mockMvc.perform(get("/tasks/{id}", "cee39fa5-3e03-11ed-85b7-fcaa14e3878f")); //1
 
         response.andExpect(status().isOk())
                 .andDo(print())
@@ -159,9 +158,9 @@ public class HTTPTesting {
 
     @Test
     public void getSeveralSingleTaskTest() throws Exception {
-        ResultActions response1 = mockMvc.perform(get("/tasks/{id}", "e7b8859e-37c6-11ed-a608-fcaa14e3878f")); //2
-        ResultActions response2 = mockMvc.perform(get("/tasks/{id}", "e7c0f9e2-37c6-11ed-a608-fcaa14e3878f")); //8
-        ResultActions response3 = mockMvc.perform(get("/tasks/{id}", "e7ca2d84-37c6-11ed-a608-fcaa14e3878f")); //14
+        ResultActions response1 = mockMvc.perform(get("/tasks/{id}", "cee50563-3e03-11ed-85b7-fcaa14e3878f")); //2
+        ResultActions response2 = mockMvc.perform(get("/tasks/{id}", "ceef06a6-3e03-11ed-85b7-fcaa14e3878f")); //8
+        ResultActions response3 = mockMvc.perform(get("/tasks/{id}", "cef8deed-3e03-11ed-85b7-fcaa14e3878f")); //14
 
 
         response1.andExpect(status().isOk())
@@ -409,7 +408,6 @@ public class HTTPTesting {
 
     @Test
     public void fullUpdateTaskTest() throws Exception {
-
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTaskName("Control the world");
         taskDTO.setTaskOrder(1);
@@ -476,7 +474,7 @@ public class HTTPTesting {
     }
 
     @Test
-    public void badDataTest() throws Exception {
+    public void badDataCreationTest() throws Exception {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTaskName("g6ERzuQC9uSJ2K5gjgOxE8JwpfdxHEMgObOH0K9pXRx9EFZQe9MV");
         taskDTO.setTaskOrder(1);
@@ -705,5 +703,260 @@ public class HTTPTesting {
                 .andExpect(jsonPath("categoryName", is("Other")));
     }
 
-    //TODO: Test badData with PUT
+    @Test
+    public void badDataUpdateTest() throws Exception {
+        TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setTaskName("Control the world");
+        taskDTO.setTaskOrder(1);
+        taskDTO.setTaskNote("Testing testing 123!");
+        taskDTO.setTaskStatus(1);
+        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
+        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
+        taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
+        taskDTO.setCategoryName("Medical");
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions createResponse = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        String originalUUID = JsonPath.read(createResponse.andReturn().getResponse().getContentAsString(), "taskUUID");
+        taskDTO.setTaskUUID(UUID.fromString(originalUUID));
+
+        createResponse.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("Control the world")))
+                .andExpect(jsonPath("taskOrder", is(1)))
+                .andExpect(jsonPath("taskNote", is("Testing testing 123!")))
+                .andExpect(jsonPath("taskStatus", is(1)))
+                .andExpect(jsonPath("taskStartTime", is("15:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("19:35:00")))
+                .andExpect(jsonPath("taskDate", is("2022-12-25")))
+                .andExpect(jsonPath("categoryName", is("Medical")));
+
+        taskDTO.setTaskName("g6ERzuQC9uSJ2K5gjgOxE8JwpfdxHEMgObOH0K9pXRx9EFZQbvbcvbcbve9MV");
+        String updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print())
+                .andExpect(content().string("Name must be between 2 and 50 characters!"));
+
+        taskDTO.setTaskName("");
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
+
+        taskDTO.setTaskName(null);
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
+
+        taskDTO.setTaskName(" ");
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
+
+        taskDTO.setTaskName("A");
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Name must be between 2 and 50 characters!"));
+
+        taskDTO.setTaskName("Update the world");
+        taskDTO.setTaskOrder(0);
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Invalid order value!"));
+
+        taskDTO.setTaskOrder(-1);
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Invalid order value!"));
+
+        taskDTO.setTaskOrder(null);
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Invalid order value!"));
+
+        taskDTO.setTaskOrder(1);
+        taskDTO.setTaskNote("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qua");
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Note cannot be longer than 200 characters!"));
+
+        taskDTO.setTaskNote("Testing testing 123!");
+        taskDTO.setTaskStatus(null);
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status cannot be null!"));
+
+        taskDTO.setTaskStatus(-1);
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
+
+        taskDTO.setTaskStatus(-99);
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
+
+        taskDTO.setTaskStatus(2);
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
+
+        taskDTO.setTaskStatus(99);
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
+
+        taskDTO.setTaskStatus(1);
+        taskDTO.setTaskStartTime(LocalTime.parse("19:00:00"));
+        taskDTO.setTaskEndTime(LocalTime.parse("15:00:00"));
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("End time is before the start time!"));
+
+        taskDTO.setTaskStartTime(LocalTime.parse("12:00:00"));
+        taskDTO.setCategoryName("Test");
+
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO.setCategoryName("");
+
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO.setCategoryName(" ");
+
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO.setCategoryName("123456");
+
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO.setCategoryName(null);
+
+        updateJsonTask = mapper.writeValueAsString(taskDTO);
+
+        updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateJsonTask));
+
+        updateResponse.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        ResultActions deleteResponse = mockMvc.perform(delete("/tasks/" + taskDTO.getTaskUUID()));
+        deleteResponse.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().string(taskDTO.getTaskName() + " has been deleted successfully!"));
+    }
 }
