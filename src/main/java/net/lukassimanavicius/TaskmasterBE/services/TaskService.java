@@ -43,8 +43,7 @@ public class TaskService {
      * Returns the task according to given UUID
      */
     public Task getSingleTask(UUID id) {
-        Task task = taskRepository.findByTaskUUID(id);
-        return task;
+        return taskRepository.findByTaskUUID(id);
     }
 
     /**
@@ -70,9 +69,7 @@ public class TaskService {
         Category category = categoryProcessing(taskToSave);
         taskToSave.setCategory(category);
 
-        Task task = taskRepository.save(taskToSave);
-
-        return task;
+        return taskRepository.save(taskToSave);
     }
 
     /**
@@ -104,8 +101,8 @@ public class TaskService {
         taskToUpdate.setTaskStatus(taskUpdateDetails.getTaskStatus());
 
         // handles correctness for start and end times
-        LocalTime startTime = taskToUpdate.getTaskStartTime();
-        LocalTime endTime = taskToUpdate.getTaskEndTime();
+        LocalTime startTime = taskUpdateDetails.getTaskStartTime();
+        LocalTime endTime = taskUpdateDetails.getTaskEndTime();
         timeProcessor(startTime, endTime);
 
         taskToUpdate.setTaskStartTime(taskUpdateDetails.getTaskStartTime());
