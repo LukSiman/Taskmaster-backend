@@ -5,18 +5,16 @@ import net.lukassimanavicius.TaskmasterBE.entities.Task;
 import net.lukassimanavicius.TaskmasterBE.services.TaskService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import java.time.format.DateTimeParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +51,27 @@ public class TaskController {
         return new ResponseEntity<>(tasksDTO, HttpStatus.OK);
     }
 
+    /**
+     * Returns a task list by provided date
+     */
+    @GetMapping("date/{date}")
+    @ResponseBody
+    public ResponseEntity<List<TaskDTO>> getDateTask(@PathVariable @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date) {
+
+        // get a list of task entities
+        List<Task> tasks = taskService.getDateTasks(date);
+
+        //TODO: Test if no tasks for the date
+
+        // convert entities to DTO
+        List<TaskDTO> tasksDTO = new ArrayList<>();
+        for (Task task : tasks) {
+            tasksDTO.add(modelMapper.map(task, TaskDTO.class));
+        }
+
+        // return a list of DTO objects as a response entity
+        return new ResponseEntity<>(tasksDTO, HttpStatus.OK);
+    }
 
     /**
      * Returns a single task by ID
