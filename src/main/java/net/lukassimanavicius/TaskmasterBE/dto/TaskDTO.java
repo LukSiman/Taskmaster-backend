@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -16,11 +17,11 @@ public class TaskDTO {
     private Integer taskOrder;
     private String taskNote;
     private Integer taskStatus;
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="HH:mm:ss")
-    private LocalTime taskStartTime;
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="HH:mm:ss")
-    private LocalTime taskEndTime;
-    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    private LocalDate taskDate;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime taskStartTime;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime taskEndTime;
+//    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+//    private LocalDate taskDate;
     private String categoryName;
 }

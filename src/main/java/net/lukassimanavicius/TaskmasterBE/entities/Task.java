@@ -11,6 +11,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -51,13 +52,13 @@ public class Task {
     private Integer taskStatus;
 
     @Column(name = "task_start_time")
-    private LocalTime taskStartTime;
+    private LocalDateTime taskStartTime;
 
     @Column(name = "task_end_time")
-    private LocalTime taskEndTime;
+    private LocalDateTime taskEndTime;
 
-    @Column(name = "task_date")
-    private LocalDate taskDate;
+//    @Column(name = "task_date")
+//    private LocalDate taskDate;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
