@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface TaskRepository extends JpaRepository<Task, Integer> {
     Task findByTaskUUID(UUID taskUUID);
 
-    List<Task> findByTaskDate(LocalDate date);
+//    List<Task> findByTaskDate(LocalDate date);
 
     String deleteByTaskUUID(UUID taskUUID);
 }

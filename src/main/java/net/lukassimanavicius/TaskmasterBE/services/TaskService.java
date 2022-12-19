@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
@@ -43,9 +44,9 @@ public class TaskService {
     /**
      * Returns tasks for the provided date
      */
-    public List<Task> getDateTasks(LocalDate date) {
-        return taskRepository.findByTaskDate(date);
-    }
+//    public List<Task> getDateTasks(LocalDate date) {
+//        return taskRepository.findByTaskDate(date);
+//    }
 
     /**
      * Returns the task according to given UUID
@@ -63,15 +64,26 @@ public class TaskService {
         // create a UUID for the task
         taskToSave.setTaskUUID(UUID.randomUUID());
 
+        // set current date as default if no date is given
+        if (taskToSave.getTaskStartTime() == null) {
+            taskToSave.setTaskStartTime(LocalDateTime.now());
+        }
+
+        if (taskToSave.getTaskEndTime() == null) {
+            taskToSave.setTaskEndTime(LocalDateTime.now());
+        }
+
         // handles correctness for start and end times
-        LocalTime startTime = taskToSave.getTaskStartTime();
-        LocalTime endTime = taskToSave.getTaskEndTime();
+//        LocalTime startTime = taskToSave.getTaskStartTime();
+//        LocalTime endTime = taskToSave.getTaskEndTime();
+        LocalDateTime startTime = taskToSave.getTaskStartTime();
+        LocalDateTime endTime = taskToSave.getTaskEndTime();
         timeProcessor(startTime, endTime);
 
         // set current date as default if no date is given
-        if (taskToSave.getTaskDate() == null) {
-            taskToSave.setTaskDate(LocalDate.now());
-        }
+//        if (taskToSave.getTaskDate() == null) {
+//            taskToSave.setTaskDate(LocalDate.now());
+//        }
 
         // set the category
         Category category = categoryProcessing(taskToSave);
@@ -109,13 +121,15 @@ public class TaskService {
         taskToUpdate.setTaskStatus(taskUpdateDetails.getTaskStatus());
 
         // handles correctness for start and end times
-        LocalTime startTime = taskUpdateDetails.getTaskStartTime();
-        LocalTime endTime = taskUpdateDetails.getTaskEndTime();
+//        LocalTime startTime = taskUpdateDetails.getTaskStartTime();
+//        LocalTime endTime = taskUpdateDetails.getTaskEndTime();
+        LocalDateTime startTime = taskUpdateDetails.getTaskStartTime();
+        LocalDateTime endTime = taskUpdateDetails.getTaskEndTime();
         timeProcessor(startTime, endTime);
 
         taskToUpdate.setTaskStartTime(taskUpdateDetails.getTaskStartTime());
         taskToUpdate.setTaskEndTime(taskUpdateDetails.getTaskEndTime());
-        taskToUpdate.setTaskDate(taskUpdateDetails.getTaskDate());
+//        taskToUpdate.setTaskDate(taskUpdateDetails.getTaskDate());
         Category category = categoryProcessing(taskUpdateDetails);
         taskToUpdate.setCategory(category);
 
@@ -149,7 +163,7 @@ public class TaskService {
     /**
      * Checks if start time and end time is set up correctly
      */
-    private void timeProcessor(LocalTime startTime, LocalTime endTime) {
+    private void timeProcessor(LocalDateTime startTime, LocalDateTime endTime) {
         // throw exception if end time is before start time
         if (startTime != null && endTime != null) {
             if (!startTime.isBefore(endTime)) {

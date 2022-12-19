@@ -54,24 +54,24 @@ public class TaskController {
     /**
      * Returns a task list by provided date
      */
-    @GetMapping("date/{date}")
-    @ResponseBody
-    public ResponseEntity<List<TaskDTO>> getDateTask(@PathVariable @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date) {
-
-        // get a list of task entities
-        List<Task> tasks = taskService.getDateTasks(date);
-
-        //TODO: Test if no tasks for the date
-
-        // convert entities to DTO
-        List<TaskDTO> tasksDTO = new ArrayList<>();
-        for (Task task : tasks) {
-            tasksDTO.add(modelMapper.map(task, TaskDTO.class));
-        }
-
-        // return a list of DTO objects as a response entity
-        return new ResponseEntity<>(tasksDTO, HttpStatus.OK);
-    }
+//    @GetMapping("date/{date}")
+//    @ResponseBody
+//    public ResponseEntity<List<TaskDTO>> getDateTask(@PathVariable @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date) {
+//
+//        // get a list of task entities
+//        List<Task> tasks = taskService.getDateTasks(date);
+//
+//        //TODO: Test if no tasks for the date
+//
+//        // convert entities to DTO
+//        List<TaskDTO> tasksDTO = new ArrayList<>();
+//        for (Task task : tasks) {
+//            tasksDTO.add(modelMapper.map(task, TaskDTO.class));
+//        }
+//
+//        // return a list of DTO objects as a response entity
+//        return new ResponseEntity<>(tasksDTO, HttpStatus.OK);
+//    }
 
     /**
      * Returns a single task by ID
