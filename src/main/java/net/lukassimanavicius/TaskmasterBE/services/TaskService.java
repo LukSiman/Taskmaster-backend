@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,9 +42,9 @@ public class TaskService {
     /**
      * Returns tasks for the provided date
      */
-//    public List<Task> getDateTasks(LocalDate date) {
-//        return taskRepository.findByTaskDate(date);
-//    }
+    public List<Task> getDateTasks(LocalDate date) {
+        return taskRepository.findByTaskDate(date);
+    }
 
     /**
      * Returns the task according to given UUID
