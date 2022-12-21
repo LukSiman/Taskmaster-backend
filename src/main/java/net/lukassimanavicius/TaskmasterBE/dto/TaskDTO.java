@@ -21,7 +21,7 @@ public class TaskDTO {
     private LocalDateTime taskStartTime;
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime taskEndTime;
-//    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-//    private LocalDate taskDate;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private LocalDate taskDate;
     private String categoryName;
 }

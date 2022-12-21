@@ -52,13 +52,15 @@ public class Task {
     private Integer taskStatus;
 
     @Column(name = "task_start_time")
+//    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime taskStartTime;
 
     @Column(name = "task_end_time")
+//    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime taskEndTime;
 
-//    @Column(name = "task_date")
-//    private LocalDate taskDate;
+    @Column(name = "task_date")
+    private LocalDate taskDate;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
