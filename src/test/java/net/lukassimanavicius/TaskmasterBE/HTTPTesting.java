@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -238,10 +239,12 @@ public class HTTPTesting {
         taskDTO.setTaskOrder(1);
         taskDTO.setTaskNote("Testing testing 123!");
         taskDTO.setTaskStatus(1);
-        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
-        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("15:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("19:35:00")));
         taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
         taskDTO.setCategoryName("Medical");
+
+        //TODO: Change all times to LocalDateTime
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -257,8 +260,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskOrder", is(1)))
                 .andExpect(jsonPath("taskNote", is("Testing testing 123!")))
                 .andExpect(jsonPath("taskStatus", is(1)))
-                .andExpect(jsonPath("taskStartTime", is("15:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("19:35:00")))
+                .andExpect(jsonPath("taskStartTime", is("2022-12-25 15:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2022-12-25 19:35:00")))
                 .andExpect(jsonPath("taskDate", is("2022-12-25")))
                 .andExpect(jsonPath("categoryName", is("Medical")));
     }
@@ -346,8 +349,8 @@ public class HTTPTesting {
         taskDTO.setTaskOrder(1);
         taskDTO.setTaskNote("Testing testing 123!");
         taskDTO.setTaskStatus(1);
-        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
-        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("15:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("19:35:00")));
         taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
         taskDTO.setCategoryName("Medical");
 
@@ -368,8 +371,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskOrder", is(1)))
                 .andExpect(jsonPath("taskNote", is("Testing testing 123!")))
                 .andExpect(jsonPath("taskStatus", is(1)))
-                .andExpect(jsonPath("taskStartTime", is("15:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("19:35:00")))
+                .andExpect(jsonPath("taskStartTime", is("2022-12-25 15:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2022-12-25 19:35:00")))
                 .andExpect(jsonPath("taskDate", is("2022-12-25")))
                 .andExpect(jsonPath("categoryName", is("Medical")));
 
@@ -377,8 +380,8 @@ public class HTTPTesting {
         taskDTO.setTaskOrder(2);
         taskDTO.setTaskNote("This must be changed");
         taskDTO.setTaskStatus(1);
-        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
-        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("15:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("19:35:00")));
         taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
         taskDTO.setCategoryName("Medical");
 
@@ -395,8 +398,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskOrder", is(2)))
                 .andExpect(jsonPath("taskNote", is("This must be changed")))
                 .andExpect(jsonPath("taskStatus", is(1)))
-                .andExpect(jsonPath("taskStartTime", is("15:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("19:35:00")))
+                .andExpect(jsonPath("taskStartTime", is("2022-12-25 15:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2022-12-25 19:35:00")))
                 .andExpect(jsonPath("taskDate", is("2022-12-25")))
                 .andExpect(jsonPath("categoryName", is("Medical")));
 
@@ -413,8 +416,8 @@ public class HTTPTesting {
         taskDTO.setTaskOrder(1);
         taskDTO.setTaskNote("Testing testing 123!");
         taskDTO.setTaskStatus(1);
-        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
-        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("15:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("19:35:00")));
         taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
         taskDTO.setCategoryName("Medical");
 
@@ -435,8 +438,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskOrder", is(1)))
                 .andExpect(jsonPath("taskNote", is("Testing testing 123!")))
                 .andExpect(jsonPath("taskStatus", is(1)))
-                .andExpect(jsonPath("taskStartTime", is("15:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("19:35:00")))
+                .andExpect(jsonPath("taskStartTime", is("2022-12-25 15:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2022-12-25 19:35:00")))
                 .andExpect(jsonPath("taskDate", is("2022-12-25")))
                 .andExpect(jsonPath("categoryName", is("Medical")));
 
@@ -444,9 +447,9 @@ public class HTTPTesting {
         taskDTO.setTaskOrder(2);
         taskDTO.setTaskNote("This must be changed");
         taskDTO.setTaskStatus(0);
-        taskDTO.setTaskStartTime(LocalTime.parse("21:00:00"));
-        taskDTO.setTaskEndTime(LocalTime.parse("22:45:00"));
-        taskDTO.setTaskDate(LocalDate.parse("1009-01-02"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2009-01-02"), LocalTime.parse("21:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2009-01-02"), LocalTime.parse("22:45:00")));
+        taskDTO.setTaskDate(LocalDate.parse("2009-01-02"));
         taskDTO.setCategoryName("Entertainment");
 
         String updateJsonTask = mapper.writeValueAsString(taskDTO);
@@ -462,9 +465,9 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskOrder", is(2)))
                 .andExpect(jsonPath("taskNote", is("This must be changed")))
                 .andExpect(jsonPath("taskStatus", is(0)))
-                .andExpect(jsonPath("taskStartTime", is("21:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("22:45:00")))
-                .andExpect(jsonPath("taskDate", is("1009-01-02")))
+                .andExpect(jsonPath("taskStartTime", is("2009-01-02 21:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2009-01-02 22:45:00")))
+                .andExpect(jsonPath("taskDate", is("2009-01-02")))
                 .andExpect(jsonPath("categoryName", is("Entertainment")));
 
         ResultActions deleteResponse = mockMvc.perform(delete("/tasks/" + taskDTO.getTaskUUID()));
@@ -480,8 +483,8 @@ public class HTTPTesting {
         taskDTO.setTaskOrder(1);
         taskDTO.setTaskNote("Testing testing 123!");
         taskDTO.setTaskStatus(1);
-        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
-        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("15:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("19:35:00")));
         taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
         taskDTO.setCategoryName("Test");
 
@@ -630,8 +633,8 @@ public class HTTPTesting {
                 .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
 
         taskDTO.setTaskStatus(1);
-        taskDTO.setTaskStartTime(LocalTime.parse("19:00:00"));
-        taskDTO.setTaskEndTime(LocalTime.parse("15:00:00"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("19:45:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("15:00:00")));
         jsonTask = mapper.writeValueAsString(taskDTO);
 
         response = mockMvc.perform(post("/tasks/save")
@@ -641,7 +644,7 @@ public class HTTPTesting {
         response.andExpect(status().isBadRequest())
                 .andDo(print()).andExpect(content().string("End time is before the start time!"));
 
-        taskDTO.setTaskStartTime(LocalTime.parse("12:00:00"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("12:00:00")));
         taskDTO.setCategoryName("Test");
 
         jsonTask = mapper.writeValueAsString(taskDTO);
@@ -710,8 +713,8 @@ public class HTTPTesting {
         taskDTO.setTaskOrder(1);
         taskDTO.setTaskNote("Testing testing 123!");
         taskDTO.setTaskStatus(1);
-        taskDTO.setTaskStartTime(LocalTime.parse("15:00:00"));
-        taskDTO.setTaskEndTime(LocalTime.parse("19:35:00"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("15:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("19:35:00")));
         taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
         taskDTO.setCategoryName("Medical");
 
@@ -732,8 +735,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskOrder", is(1)))
                 .andExpect(jsonPath("taskNote", is("Testing testing 123!")))
                 .andExpect(jsonPath("taskStatus", is(1)))
-                .andExpect(jsonPath("taskStartTime", is("15:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("19:35:00")))
+                .andExpect(jsonPath("taskStartTime", is("2022-12-25 15:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2022-12-25 19:35:00")))
                 .andExpect(jsonPath("taskDate", is("2022-12-25")))
                 .andExpect(jsonPath("categoryName", is("Medical")));
 
@@ -882,8 +885,8 @@ public class HTTPTesting {
                 .andDo(print()).andExpect(content().string("Status has to be 0 or 1!"));
 
         taskDTO.setTaskStatus(1);
-        taskDTO.setTaskStartTime(LocalTime.parse("19:00:00"));
-        taskDTO.setTaskEndTime(LocalTime.parse("15:00:00"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("19:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("15:00:00")));
         updateJsonTask = mapper.writeValueAsString(taskDTO);
 
         updateResponse = mockMvc.perform(put("/tasks/" + taskDTO.getTaskUUID())
@@ -893,7 +896,7 @@ public class HTTPTesting {
         updateResponse.andExpect(status().isBadRequest())
                 .andDo(print()).andExpect(content().string("End time is before the start time!"));
 
-        taskDTO.setTaskStartTime(LocalTime.parse("12:00:00"));
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("12:00:00")));
         taskDTO.setCategoryName("Test");
 
         updateJsonTask = mapper.writeValueAsString(taskDTO);
