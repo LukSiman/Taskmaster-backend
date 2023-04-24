@@ -244,8 +244,6 @@ public class HTTPTesting {
         taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
         taskDTO.setCategoryName("Medical");
 
-        //TODO: Change all times to LocalDateTime
-
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         String jsonTask = mapper.writeValueAsString(taskDTO);
