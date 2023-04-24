@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,13 +64,15 @@ public class TaskService {
         taskToSave.setTaskUUID(UUID.randomUUID());
 
         // set current date as default if no date is given
-        if (taskToSave.getTaskStartTime() == null) {
-            taskToSave.setTaskStartTime(LocalDateTime.now());
-        }
+//        if (taskToSave.getTaskStartTime() == null) {
+//            taskToSave.setTaskStartTime(LocalDateTime.now());
+//            taskToSave.setTaskStartTime(LocalDateTime.of(LocalDate.now, LocalTime.parse("00:00:00")));
+//        }
 
-        if (taskToSave.getTaskEndTime() == null) {
-            taskToSave.setTaskEndTime(LocalDateTime.now());
-        }
+//        if (taskToSave.getTaskEndTime() == null) {
+//            taskToSave.setTaskEndTime(LocalDateTime.now());
+//            taskToSave.setTaskStartTime(LocalDateTime.of(LocalDate.now, LocalTime.parse("00:00:00")));
+//        }
 
         // handles correctness for start and end times
 //        LocalTime startTime = taskToSave.getTaskStartTime();
@@ -127,7 +130,7 @@ public class TaskService {
 
         taskToUpdate.setTaskStartTime(taskUpdateDetails.getTaskStartTime());
         taskToUpdate.setTaskEndTime(taskUpdateDetails.getTaskEndTime());
-//        taskToUpdate.setTaskDate(taskUpdateDetails.getTaskDate());
+        taskToUpdate.setTaskDate(taskUpdateDetails.getTaskDate());
         Category category = categoryProcessing(taskUpdateDetails);
         taskToUpdate.setCategory(category);
 

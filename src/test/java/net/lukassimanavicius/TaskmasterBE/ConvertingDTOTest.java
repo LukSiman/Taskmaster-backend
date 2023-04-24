@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,10 +86,10 @@ public class ConvertingDTOTest {
         task.setTaskStatus(status);
 
         LocalTime startTime = LocalTime.parse("18:20:00");
-        task.setTaskStartTime(startTime);
+        task.setTaskStartTime(LocalDateTime.from(startTime));
 
         LocalTime endTime = LocalTime.parse("19:20:00");
-        task.setTaskEndTime(endTime);
+        task.setTaskEndTime(LocalDateTime.from(endTime));
 
         TaskDTO taskDTO = modelMapper.map(task, TaskDTO.class);
 
