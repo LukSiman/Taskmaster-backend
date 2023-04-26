@@ -63,28 +63,19 @@ public class TaskService {
         // create a UUID for the task
         taskToSave.setTaskUUID(UUID.randomUUID());
 
-        // set current date as default if no date is given
-//        if (taskToSave.getTaskStartTime() == null) {
-//            taskToSave.setTaskStartTime(LocalDateTime.now());
-//            taskToSave.setTaskStartTime(LocalDateTime.of(LocalDate.now, LocalTime.parse("00:00:00")));
-//        }
-
-//        if (taskToSave.getTaskEndTime() == null) {
-//            taskToSave.setTaskEndTime(LocalDateTime.now());
-//            taskToSave.setTaskStartTime(LocalDateTime.of(LocalDate.now, LocalTime.parse("00:00:00")));
-//        }
-
         // handles correctness for start and end times
-//        LocalTime startTime = taskToSave.getTaskStartTime();
-//        LocalTime endTime = taskToSave.getTaskEndTime();
         LocalDateTime startTime = taskToSave.getTaskStartTime();
         LocalDateTime endTime = taskToSave.getTaskEndTime();
         timeProcessor(startTime, endTime);
 
-        // set current date as default if no date is given
-//        if (taskToSave.getTaskDate() == null) {
-//            taskToSave.setTaskDate(LocalDate.now());
-//        }
+        // set the order of the task
+        //TODO: FINISH somehow find what should the correct order be
+        //TODO: if no time, goes last
+        //TODO: if time then in correct spot
+        handleCorrectOrder(taskToSave);
+
+        // By default status is 0 (not completed)
+        taskToSave.setTaskStatus(0);
 
         // set the category
         Category category = categoryProcessing(taskToSave);
@@ -173,6 +164,45 @@ public class TaskService {
             // throw exception if only end time has been entered
         } else if (startTime == null && endTime != null) {
             throw new BadTimeException("You're missing start time!");
+        }
+    }
+
+    /**
+     * Sets the correct task order
+     */
+    private void handleCorrectOrder(Task task) {
+        if (task.getTaskStartTime() == null) {
+            // gets the amount of tasks for the date
+            int sizeOfDay = getDateTasks(task.getTaskDate()).size();
+
+            // increments by 1 and sets it as the order
+            sizeOfDay++;
+            task.setTaskOrder(sizeOfDay);
+        } else {
+            // get the task list
+            List<Task> taskList = getDateTasks(task.getTaskDate());
+
+            // get the start time of the task
+            LocalDateTime startTime = task.getTaskStartTime();
+
+
+            // check times for every task and decide the order
+            for (Task taskToCheck : taskList) {
+                // check if task has no start time
+                if (taskToCheck.getTaskStartTime() == null) {
+                    //TODO: Finish
+                    break;
+                }
+
+                // get the start time of the task from the list
+                LocalDateTime startTimeToCheck = taskToCheck.getTaskStartTime();
+
+                if (startTime.isBefore(startTimeToCheck)) {
+                    int oldOrder = taskToCheck.getTaskOrder();
+
+
+                }
+            }
         }
     }
 }
