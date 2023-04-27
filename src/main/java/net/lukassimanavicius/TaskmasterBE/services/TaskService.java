@@ -182,6 +182,12 @@ public class TaskService {
             // get the task list
             List<Task> taskList = getDateTasks(task.getTaskDate());
 
+            // set order to 1 if no tasks were in the day
+            if (taskList.size() == 0) {
+                task.setTaskOrder(1);
+                return;
+            }
+
             // get the start time of the task
             LocalDateTime startTime = task.getTaskStartTime();
             boolean orderSet = false;
@@ -190,8 +196,8 @@ public class TaskService {
             for (Task taskToCheck : taskList) {
 
                 // check if new order has been set and update the remaining orders
-                if(orderSet){
-                    int oldOrder =  taskToCheck.getTaskOrder();
+                if (orderSet) {
+                    int oldOrder = taskToCheck.getTaskOrder();
                     taskToCheck.setTaskOrder(++oldOrder);
                     updateTask(taskToCheck);
                 }
@@ -206,7 +212,19 @@ public class TaskService {
                     taskToCheck.setTaskOrder(++oldOrder);
                     updateTask(taskToCheck);
                     orderSet = true;
+
+                    //TODO: Split into more methods, getting too complex
+                    //TODO: After changing the order all tasks need to be looped again
+                    //TODO: Idea: Get rid of ordering in the database and process the list on the backend? Simple sort?
                 }
+            }
+
+            if (task.getTaskOrder() == null) {
+                int sizeOfDay = getDateTasks(task.getTaskDate()).size();
+
+                // increments by 1 and sets it as the order
+                sizeOfDay++;
+                task.setTaskOrder(sizeOfDay);
             }
         }
     }
