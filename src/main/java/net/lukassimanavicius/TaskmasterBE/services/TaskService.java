@@ -184,23 +184,28 @@ public class TaskService {
 
             // get the start time of the task
             LocalDateTime startTime = task.getTaskStartTime();
-
+            boolean orderSet = false;
 
             // check times for every task and decide the order
             for (Task taskToCheck : taskList) {
-                // check if task has no start time
-                if (taskToCheck.getTaskStartTime() == null) {
-                    //TODO: Finish
-                    break;
+
+                // check if new order has been set and update the remaining orders
+                if(orderSet){
+                    int oldOrder =  taskToCheck.getTaskOrder();
+                    taskToCheck.setTaskOrder(++oldOrder);
+                    updateTask(taskToCheck);
                 }
 
                 // get the start time of the task from the list
                 LocalDateTime startTimeToCheck = taskToCheck.getTaskStartTime();
 
+                // check if task if before the checked task and set the new order
                 if (startTime.isBefore(startTimeToCheck)) {
                     int oldOrder = taskToCheck.getTaskOrder();
-
-
+                    task.setTaskOrder(oldOrder);
+                    taskToCheck.setTaskOrder(++oldOrder);
+                    updateTask(taskToCheck);
+                    orderSet = true;
                 }
             }
         }
