@@ -391,34 +391,277 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskEndTime").doesNotExist())
                 .andExpect(jsonPath("taskDate", is("2023-04-01")))
                 .andExpect(jsonPath("categoryName", is("Other")));
+
+        String uuid = JsonPath.read(response1.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        ResultActions deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response2.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response3.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response4.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response5.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response6.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
     }
 
     @Test
     public void createTasksAndCheckOrderWithTime() throws Exception {
         TaskDTO taskDTO = new TaskDTO();
-        taskDTO.setTaskName("Control the world");
-        taskDTO.setTaskOrder(1);
-        taskDTO.setTaskStatus(0);
-        taskDTO.setTaskDate(LocalDate.parse("2022-12-25"));
+        taskDTO.setTaskName("No time 1");
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("07:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("08:35:00")));
+        taskDTO.setTaskDate(LocalDate.parse("2023-04-01"));
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         String jsonTask = mapper.writeValueAsString(taskDTO);
 
-        ResultActions response = mockMvc.perform(post("/tasks/save")
+        ResultActions response1 = mockMvc.perform(post("/tasks/save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonTask));
 
-        response.andExpect(status().isCreated())
+        response1.andExpect(status().isCreated())
                 .andDo(print())
-                .andExpect(jsonPath("taskName", is("Control the world")))
+                .andExpect(jsonPath("taskName", is("No time 1")))
                 .andExpect(jsonPath("taskOrder", is(1)))
                 .andExpect(jsonPath("taskNote").doesNotExist())
                 .andExpect(jsonPath("taskStatus", is(0)))
-                .andExpect(jsonPath("taskStartTime").doesNotExist())
-                .andExpect(jsonPath("taskEndTime").doesNotExist())
-                .andExpect(jsonPath("taskDate", is("2022-12-25")))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 07:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 08:35:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
                 .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO = new TaskDTO();
+        taskDTO.setTaskName("No time 2");
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("09:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("09:30:00")));
+        taskDTO.setTaskDate(LocalDate.parse("2023-04-01"));
+
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response2 = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response2.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 2")))
+                .andExpect(jsonPath("taskOrder", is(2)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 09:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 09:30:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+
+        taskDTO = new TaskDTO();
+        taskDTO.setTaskName("No time 3");
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("14:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("15:35:00")));
+        taskDTO.setTaskDate(LocalDate.parse("2023-04-01"));
+
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response3 = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response3.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 3")))
+                .andExpect(jsonPath("taskOrder", is(3)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 14:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 15:35:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO = new TaskDTO();
+        taskDTO.setTaskName("No time 4");
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("06:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("06:35:00")));
+        taskDTO.setTaskDate(LocalDate.parse("2023-04-01"));
+
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response4 = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response4.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 4")))
+                .andExpect(jsonPath("taskOrder", is(1)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 06:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 06:35:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO = new TaskDTO();
+        taskDTO.setTaskName("No time 5");
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("17:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("18:35:00")));
+        taskDTO.setTaskDate(LocalDate.parse("2023-04-01"));
+
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response5 = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        taskDTO = new TaskDTO();
+        taskDTO.setTaskName("No time 6");
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("11:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("12:35:00")));
+        taskDTO.setTaskDate(LocalDate.parse("2023-04-01"));
+
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response6 = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response1.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 1")))
+                .andExpect(jsonPath("taskOrder", is(2)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 07:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 08:35:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        response2.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 2")))
+                .andExpect(jsonPath("taskOrder", is(3)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 09:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 09:30:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        response3.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 3")))
+                .andExpect(jsonPath("taskOrder", is(5)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 14:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 15:35:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        response4.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 4")))
+                .andExpect(jsonPath("taskOrder", is(1)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 06:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 06:35:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        response5.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 5")))
+                .andExpect(jsonPath("taskOrder", is(6)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 17:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 18:35:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        response6.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 6")))
+                .andExpect(jsonPath("taskOrder", is(4)))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 11:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 12:35:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+
+        String uuid = JsonPath.read(response1.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        ResultActions deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response2.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response3.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response4.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response5.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response6.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
     }
 
     @Test
