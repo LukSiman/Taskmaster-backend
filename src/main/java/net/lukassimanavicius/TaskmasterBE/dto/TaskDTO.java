@@ -14,7 +14,7 @@ import java.util.UUID;
 public class TaskDTO {
     private UUID taskUUID;
     private String taskName;
-    private Integer taskOrder;
+//    private Integer taskOrder;
     private String taskNote;
     private Integer taskStatus;
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")

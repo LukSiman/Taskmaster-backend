@@ -36,10 +36,10 @@ public class Task {
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters!")
     private String taskName;
 
-    @Column(name = "task_order")
-    @NotNull(message = "Invalid order value!")
-    @Min(value = 1, message = "Invalid order value!")
-    private Integer taskOrder;
+//    @Column(name = "task_order")
+//    @NotNull(message = "Invalid order value!")
+//    @Min(value = 1, message = "Invalid order value!")
+//    private Integer taskOrder;
 
     @Column(name = "task_note")
     @Size(max = 200, message = "Note cannot be longer than 200 characters!")
