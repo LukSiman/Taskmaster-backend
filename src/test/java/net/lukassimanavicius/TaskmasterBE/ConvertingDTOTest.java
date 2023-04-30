@@ -79,9 +79,6 @@ public class ConvertingDTOTest {
         String note = "Big Test";
         task.setTaskNote(note);
 
-        Integer order = 5;
-        task.setTaskOrder(order);
-
         Integer status = 1;
         task.setTaskStatus(status);
 
@@ -97,14 +94,12 @@ public class ConvertingDTOTest {
         assertEquals(name, task.getTaskName());
         assertEquals(date, task.getTaskDate());
         assertEquals(note, task.getTaskNote());
-        assertEquals(order, task.getTaskOrder());
         assertEquals(status, task.getTaskStatus());
         assertEquals(startTime, task.getTaskStartTime());
         assertEquals(endTime, task.getTaskEndTime());
         assertEquals(taskDTO.getTaskName(), task.getTaskName());
         assertEquals(taskDTO.getTaskDate(), task.getTaskDate());
         assertEquals(taskDTO.getTaskNote(), task.getTaskNote());
-        assertEquals(taskDTO.getTaskOrder(), task.getTaskOrder());
         assertEquals(taskDTO.getTaskStatus(), task.getTaskStatus());
         assertEquals(taskDTO.getTaskStartTime(), task.getTaskStartTime());
         assertEquals(taskDTO.getTaskEndTime(), task.getTaskEndTime());

@@ -64,15 +64,13 @@ public class TaskService {
         taskToSave.setTaskUUID(UUID.randomUUID());
 
         // handles correctness for start and end times
-        LocalDateTime startTime = taskToSave.getTaskStartTime();
-        LocalDateTime endTime = taskToSave.getTaskEndTime();
-        timeProcessor(startTime, endTime);
+        timeProcessor(taskToSave);
 
         // set the order of the task
         //TODO: FINISH somehow find what should the correct order be
         //TODO: if no time, goes last
         //TODO: if time then in correct spot
-        handleCorrectOrder(taskToSave);
+//        handleCorrectOrder(taskToSave);
 
         // By default status is 0 (not completed)
         taskToSave.setTaskStatus(0);
@@ -113,11 +111,7 @@ public class TaskService {
         taskToUpdate.setTaskStatus(taskUpdateDetails.getTaskStatus());
 
         // handles correctness for start and end times
-//        LocalTime startTime = taskUpdateDetails.getTaskStartTime();
-//        LocalTime endTime = taskUpdateDetails.getTaskEndTime();
-        LocalDateTime startTime = taskUpdateDetails.getTaskStartTime();
-        LocalDateTime endTime = taskUpdateDetails.getTaskEndTime();
-        timeProcessor(startTime, endTime);
+        timeProcessor(taskUpdateDetails);
 
         taskToUpdate.setTaskStartTime(taskUpdateDetails.getTaskStartTime());
         taskToUpdate.setTaskEndTime(taskUpdateDetails.getTaskEndTime());
@@ -156,7 +150,10 @@ public class TaskService {
     /**
      * Checks if start time and end time is set up correctly
      */
-    private void timeProcessor(LocalDateTime startTime, LocalDateTime endTime) {
+    private void timeProcessor(Task taskToSave) {
+        LocalDateTime startTime = taskToSave.getTaskStartTime();
+        LocalDateTime endTime = taskToSave.getTaskEndTime();
+
         // throw exception if end time is before start time
         if (startTime != null && endTime != null) {
             if (!startTime.isBefore(endTime)) {
@@ -165,6 +162,12 @@ public class TaskService {
             // throw exception if only end time has been entered
         } else if (startTime == null && endTime != null) {
             throw new BadTimeException("You're missing start time!");
+            // if both are null set as 00:00:00 time of the date
+        } else if (startTime == null && endTime == null) {
+            startTime = LocalDateTime.of(taskToSave.getTaskDate(), LocalTime.parse("00:00:00"));
+            endTime = LocalDateTime.of(taskToSave.getTaskDate(), LocalTime.parse("00:00:00"));
+            taskToSave.setTaskStartTime(startTime);
+            taskToSave.setTaskEndTime(endTime);
         }
     }
 
@@ -172,8 +175,19 @@ public class TaskService {
      * Sets the correct task order
      */
     private void handleCorrectOrder(Task task) {
+        if (task.getTaskStartTime() == null) {
+            // gets the amount of tasks for the date
+            int sizeOfDay = getDateTasks(task.getTaskDate()).size();
+
+            // increments by 1 and sets it as the order
+            sizeOfDay++;
+//            task.setTaskOrder(sizeOfDay);
+        }
+    }
+}
 
 
+//    private void handleCorrectOrder(Task task) {
 //
 //        if (task.getTaskStartTime() == null) {
 //            // gets the amount of tasks for the date
@@ -231,5 +245,4 @@ public class TaskService {
 //                task.setTaskOrder(sizeOfDay);
 //            }
 //        }
-    }
-}
+//    }
