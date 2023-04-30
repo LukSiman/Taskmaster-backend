@@ -214,6 +214,23 @@ public class HTTPTesting {
     }
 
     @Test
+    public void getTasksBadDate() throws Exception {
+        ResultActions response = mockMvc.perform(get("/tasks/date/9999-99-99"));
+
+        response.andExpect(status().isBadRequest())
+                .andDo(print()).andExpect(content().string("Invalid format: 9999-99-99, please try again!"));
+    }
+
+    @Test
+    public void getTasksGoodDateNoTasks() throws Exception {
+        ResultActions response = mockMvc.perform(get("/tasks/date/9999-01-01"));
+
+        response.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.size()", is(0)));
+    }
+
+    @Test
     public void createNewTaskMinimalTest() throws Exception {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTaskName("Control the world");

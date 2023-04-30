@@ -62,8 +62,6 @@ public class TaskController {
         List<Task> tasks = taskService.getDateTasks(date);
         System.out.println(tasks);
 
-        //TODO: Test if no tasks for the date
-
         // convert entities to DTO
         List<TaskDTO> tasksDTO = new ArrayList<>();
         for (Task task : tasks) {

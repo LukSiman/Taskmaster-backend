@@ -1,5 +1,6 @@
 package net.lukassimanavicius.TaskmasterBE.exceptions;
 
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,11 +18,31 @@ public class ExceptionManager {
     /**
      * Handles exceptions for bad IDs
      */
-    @ExceptionHandler({EntityNotFoundException.class, MissingPathVariableException.class, MethodArgumentTypeMismatchException.class})
-    private ResponseEntity handleBadID() {
+    @ExceptionHandler({EntityNotFoundException.class, MissingPathVariableException.class})
+    private ResponseEntity handleBadID(Exception ex) {
         String message = "Bad id, please try again!";
+
         return ResponseEntity.badRequest().body(message);
     }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    private ResponseEntity handleBadType(MethodArgumentTypeMismatchException exception) {
+        String message = "Bad id, please try again!";
+
+        Throwable cause = exception.getCause();
+        if (cause instanceof ConversionFailedException) {
+            cause = cause.getCause();
+            if (cause instanceof IllegalArgumentException) {
+                cause = cause.getCause();
+                if (cause instanceof DateTimeParseException) {
+                    DateTimeParseException dateException = (DateTimeParseException) cause;
+                    message = "Invalid format: " + dateException.getParsedString() + ", please try again!";
+                }
+            }
+        }
+        return ResponseEntity.badRequest().body(message);
+    }
+
 
     /**
      * Handles bad date and time format exceptions
