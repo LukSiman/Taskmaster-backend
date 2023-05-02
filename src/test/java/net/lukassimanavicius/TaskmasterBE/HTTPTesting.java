@@ -249,8 +249,8 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskName", is("Control the world")))
                 .andExpect(jsonPath("taskNote").doesNotExist())
                 .andExpect(jsonPath("taskStatus", is(0)))
-                .andExpect(jsonPath("taskStartTime").doesNotExist())
-                .andExpect(jsonPath("taskEndTime").doesNotExist())
+                .andExpect(jsonPath("taskStartTime", is("2022-12-25 00:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2022-12-25 00:00:00")))
                 .andExpect(jsonPath("taskDate", is("2022-12-25")))
                 .andExpect(jsonPath("categoryName", is("Other")));
 
@@ -481,7 +481,6 @@ public class HTTPTesting {
     }
 
 
-    //TODO: Continue here
     @Test
     public void createTasksAndCheckOrderWithTimeSmall() throws Exception {
         TaskDTO taskDTO = new TaskDTO();
