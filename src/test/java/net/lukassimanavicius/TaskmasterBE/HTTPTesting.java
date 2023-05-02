@@ -538,9 +538,6 @@ public class HTTPTesting {
 
         int nameNumber = 2;
         for (TaskDTO task : taskList) {
-            System.out.println("AAAAAAAAAAAAAAAAAAAA");
-            System.out.println(task);
-            System.out.println("AAAAAAAAAAAAAAAAAAAA");
             assertEquals(String.format("No time %d", nameNumber), task.getTaskName());
             nameNumber--;
         }
@@ -548,7 +545,6 @@ public class HTTPTesting {
         dayResponse.andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$.size()", is(2)));
-
 
         String uuid = JsonPath.read(response1.andReturn().getResponse().getContentAsString(), "taskUUID");
 
@@ -613,7 +609,6 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskDate", is("2023-04-01")))
                 .andExpect(jsonPath("categoryName", is("Other")));
 
-
         taskDTO = new TaskDTO();
         taskDTO.setTaskName("No time 3");
         taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("14:00:00")));
@@ -670,6 +665,16 @@ public class HTTPTesting {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonTask));
 
+        response5.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 5")))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 17:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 18:35:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
         taskDTO = new TaskDTO();
         taskDTO.setTaskName("No time 6");
         taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("11:00:00")));
@@ -682,56 +687,6 @@ public class HTTPTesting {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonTask));
 
-        response1.andExpect(status().isCreated())
-                .andDo(print())
-                .andExpect(jsonPath("taskName", is("No time 1")))
-                .andExpect(jsonPath("taskNote").doesNotExist())
-                .andExpect(jsonPath("taskStatus", is(0)))
-                .andExpect(jsonPath("taskStartTime", is("2023-04-01 07:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("2023-04-01 08:35:00")))
-                .andExpect(jsonPath("taskDate", is("2023-04-01")))
-                .andExpect(jsonPath("categoryName", is("Other")));
-
-        response2.andExpect(status().isCreated())
-                .andDo(print())
-                .andExpect(jsonPath("taskName", is("No time 2")))
-                .andExpect(jsonPath("taskNote").doesNotExist())
-                .andExpect(jsonPath("taskStatus", is(0)))
-                .andExpect(jsonPath("taskStartTime", is("2023-04-01 09:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("2023-04-01 09:30:00")))
-                .andExpect(jsonPath("taskDate", is("2023-04-01")))
-                .andExpect(jsonPath("categoryName", is("Other")));
-
-        response3.andExpect(status().isCreated())
-                .andDo(print())
-                .andExpect(jsonPath("taskName", is("No time 3")))
-                .andExpect(jsonPath("taskNote").doesNotExist())
-                .andExpect(jsonPath("taskStatus", is(0)))
-                .andExpect(jsonPath("taskStartTime", is("2023-04-01 14:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("2023-04-01 15:35:00")))
-                .andExpect(jsonPath("taskDate", is("2023-04-01")))
-                .andExpect(jsonPath("categoryName", is("Other")));
-
-        response4.andExpect(status().isCreated())
-                .andDo(print())
-                .andExpect(jsonPath("taskName", is("No time 4")))
-                .andExpect(jsonPath("taskNote").doesNotExist())
-                .andExpect(jsonPath("taskStatus", is(0)))
-                .andExpect(jsonPath("taskStartTime", is("2023-04-01 06:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("2023-04-01 06:35:00")))
-                .andExpect(jsonPath("taskDate", is("2023-04-01")))
-                .andExpect(jsonPath("categoryName", is("Other")));
-
-        response5.andExpect(status().isCreated())
-                .andDo(print())
-                .andExpect(jsonPath("taskName", is("No time 5")))
-                .andExpect(jsonPath("taskNote").doesNotExist())
-                .andExpect(jsonPath("taskStatus", is(0)))
-                .andExpect(jsonPath("taskStartTime", is("2023-04-01 17:00:00")))
-                .andExpect(jsonPath("taskEndTime", is("2023-04-01 18:35:00")))
-                .andExpect(jsonPath("taskDate", is("2023-04-01")))
-                .andExpect(jsonPath("categoryName", is("Other")));
-
         response6.andExpect(status().isCreated())
                 .andDo(print())
                 .andExpect(jsonPath("taskName", is("No time 6")))
@@ -742,6 +697,18 @@ public class HTTPTesting {
                 .andExpect(jsonPath("taskDate", is("2023-04-01")))
                 .andExpect(jsonPath("categoryName", is("Other")));
 
+        ResultActions dayResponse = mockMvc.perform(get("/tasks/date/2023-04-01"));
+        String resultString = dayResponse.andReturn().getResponse().getContentAsString();
+
+        // deserialize JSON response into a list
+        TaskDTO[] taskList = mapper.readValue(resultString, TaskDTO[].class);
+
+        int[] taskNameOrder = {4, 1, 2, 6, 3, 5};
+        int index = 0;
+        for (TaskDTO task : taskList) {
+            assertEquals(String.format("No time %d", taskNameOrder[index]), task.getTaskName());
+            index++;
+        }
 
         String uuid = JsonPath.read(response1.andReturn().getResponse().getContentAsString(), "taskUUID");
 
