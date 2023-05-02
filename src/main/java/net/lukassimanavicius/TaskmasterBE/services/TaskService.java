@@ -168,22 +168,39 @@ public class TaskService {
     }
 
     /**
-     * Sorts the tasks by start time
+     * Sorts a list of tasks by their start times in ascending order.
+     * Tasks with a start time of 00:00 are moved to the end of the list.
      */
     private List<Task> handleCorrectOrder(List<Task> listToSort) {
 
-        // create a comparator that compares the start times
+        // Create a comparator that compares the start times
         Comparator<Task> startTimeComparator = new Comparator<Task>() {
             @Override
             public int compare(Task task1, Task task2) {
-                // local variables for start times
+                // Local variables for start times
                 LocalDateTime startTime1 = task1.getTaskStartTime();
                 LocalDateTime startTime2 = task2.getTaskStartTime();
 
-                // checks which task start before
+                // Check if start times are at 00:00 and handle accordingly
+                boolean isStartTime1Midnight = startTime1.getHour() == 0 && startTime1.getMinute() == 0;
+                boolean isStartTime2Midnight = startTime2.getHour() == 0 && startTime2.getMinute() == 0;
+
+                if (isStartTime1Midnight && isStartTime2Midnight) {
+                    return 0;
+                } else if (isStartTime1Midnight) {
+                    // Move task1 to the end
+                    return 1;
+                } else if (isStartTime2Midnight) {
+                    // Move task2 to the end
+                    return -1;
+                }
+
+                // Check which task starts before
                 if (startTime1.isBefore(startTime2)) {
+                    // Move task1 to the front
                     return -1;
                 } else if (startTime1.isAfter(startTime2)) {
+                    // Move task1 to the back
                     return 1;
                 } else {
                     return 0;
@@ -191,7 +208,7 @@ public class TaskService {
             }
         };
 
-        // sort the list
+        // Sort the list
         listToSort.sort(startTimeComparator);
 
         return listToSort;
