@@ -483,6 +483,89 @@ public class HTTPTesting {
 
     //TODO: Continue here
     @Test
+    public void createTasksAndCheckOrderWithTimeSmall() throws Exception {
+        TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setTaskName("No time 1");
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("10:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("11:35:00")));
+        taskDTO.setTaskDate(LocalDate.parse("2023-04-01"));
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response1 = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response1.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 1")))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 10:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 11:35:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        taskDTO = new TaskDTO();
+        taskDTO.setTaskName("No time 2");
+        taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("09:00:00")));
+        taskDTO.setTaskEndTime(LocalDateTime.of(LocalDate.parse("2023-04-01"), LocalTime.parse("09:30:00")));
+        taskDTO.setTaskDate(LocalDate.parse("2023-04-01"));
+
+        jsonTask = mapper.writeValueAsString(taskDTO);
+
+        ResultActions response2 = mockMvc.perform(post("/tasks/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonTask));
+
+        response2.andExpect(status().isCreated())
+                .andDo(print())
+                .andExpect(jsonPath("taskName", is("No time 2")))
+                .andExpect(jsonPath("taskNote").doesNotExist())
+                .andExpect(jsonPath("taskStatus", is(0)))
+                .andExpect(jsonPath("taskStartTime", is("2023-04-01 09:00:00")))
+                .andExpect(jsonPath("taskEndTime", is("2023-04-01 09:30:00")))
+                .andExpect(jsonPath("taskDate", is("2023-04-01")))
+                .andExpect(jsonPath("categoryName", is("Other")));
+
+        ResultActions dayResponse = mockMvc.perform(get("/tasks/date/2023-04-01"));
+        String resultString = dayResponse.andReturn().getResponse().getContentAsString();
+
+        // deserialize JSON response into a list
+        TaskDTO[] taskList = mapper.readValue(resultString, TaskDTO[].class);
+
+        int nameNumber = 2;
+        for (TaskDTO task : taskList) {
+            System.out.println("AAAAAAAAAAAAAAAAAAAA");
+            System.out.println(task);
+            System.out.println("AAAAAAAAAAAAAAAAAAAA");
+            assertEquals(String.format("No time %d", nameNumber), task.getTaskName());
+            nameNumber--;
+        }
+
+        dayResponse.andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.size()", is(2)));
+
+
+        String uuid = JsonPath.read(response1.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        ResultActions deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+
+
+        uuid = JsonPath.read(response2.andReturn().getResponse().getContentAsString(), "taskUUID");
+
+        deleteResponse = mockMvc.perform(delete("/tasks/" + uuid));
+
+        deleteResponse.andExpect(status().isOk());
+    }
+
+
+    @Test
     public void createTasksAndCheckOrderWithTime() throws Exception {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setTaskName("No time 1");
@@ -1020,6 +1103,7 @@ public class HTTPTesting {
                 .andDo(print()).andExpect(content().string("End time is before the start time!"));
 
         taskDTO.setTaskStartTime(LocalDateTime.of(LocalDate.parse("2022-12-25"), LocalTime.parse("12:00:00")));
+
         taskDTO.setCategoryName("Test");
 
         jsonTask = mapper.writeValueAsString(taskDTO);
