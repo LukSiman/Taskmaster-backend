@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +45,11 @@ public class TaskService {
      * Returns tasks for the provided date
      */
     public List<Task> getDateTasks(LocalDate date) {
-        return taskRepository.findByTaskDate(date);
+        List<Task> returnList = taskRepository.findByTaskDate(date);
+
+        returnList = handleCorrectOrder(returnList);
+
+        return returnList;
     }
 
     /**
@@ -66,13 +71,7 @@ public class TaskService {
         // handles correctness for start and end times
         timeProcessor(taskToSave);
 
-        // set the order of the task
-        //TODO: FINISH somehow find what should the correct order be
-        //TODO: if no time, goes last
-        //TODO: if time then in correct spot
-//        handleCorrectOrder(taskToSave);
-
-        // By default status is 0 (not completed)
+        // By default, status is 0 (not completed)
         taskToSave.setTaskStatus(0);
 
         // set the category
@@ -106,15 +105,12 @@ public class TaskService {
 
         // Update fields with new data
         taskToUpdate.setTaskName(taskUpdateDetails.getTaskName());
-//        taskToUpdate.setTaskOrder(taskUpdateDetails.getTaskOrder());
         taskToUpdate.setTaskNote(taskUpdateDetails.getTaskNote());
         taskToUpdate.setTaskStatus(taskUpdateDetails.getTaskStatus());
 
         // handles correctness for start and end times
         timeProcessor(taskUpdateDetails);
 
-        taskToUpdate.setTaskStartTime(taskUpdateDetails.getTaskStartTime());
-        taskToUpdate.setTaskEndTime(taskUpdateDetails.getTaskEndTime());
         taskToUpdate.setTaskDate(taskUpdateDetails.getTaskDate());
 
         Category category = categoryProcessing(taskUpdateDetails);
@@ -172,77 +168,32 @@ public class TaskService {
     }
 
     /**
-     * Sets the correct task order
+     * Sorts the tasks by start time
      */
-    private void handleCorrectOrder(Task task) {
-        if (task.getTaskStartTime() == null) {
-            // gets the amount of tasks for the date
-            int sizeOfDay = getDateTasks(task.getTaskDate()).size();
+    private List<Task> handleCorrectOrder(List<Task> listToSort) {
 
-            // increments by 1 and sets it as the order
-            sizeOfDay++;
-//            task.setTaskOrder(sizeOfDay);
-        }
+        // create a comparator that compares the start times
+        Comparator<Task> startTimeComparator = new Comparator<Task>() {
+            @Override
+            public int compare(Task task1, Task task2) {
+                // local variables for start times
+                LocalDateTime startTime1 = task1.getTaskStartTime();
+                LocalDateTime startTime2 = task2.getTaskStartTime();
+
+                // checks which task start before
+                if (startTime1.isBefore(startTime2)) {
+                    return -1;
+                } else if (startTime1.isAfter(startTime2)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        };
+
+        // sort the list
+        listToSort.sort(startTimeComparator);
+
+        return listToSort;
     }
 }
-
-
-//    private void handleCorrectOrder(Task task) {
-//
-//        if (task.getTaskStartTime() == null) {
-//            // gets the amount of tasks for the date
-//            int sizeOfDay = getDateTasks(task.getTaskDate()).size();
-//
-//            // increments by 1 and sets it as the order
-//            sizeOfDay++;
-//            task.setTaskOrder(sizeOfDay);
-//        } else {
-//            // get the task list
-//            List<Task> taskList = getDateTasks(task.getTaskDate());
-//
-//            // set order to 1 if no tasks were in the day
-//            if (taskList.size() == 0) {
-//                task.setTaskOrder(1);
-//                return;
-//            }
-//
-//            // get the start time of the task
-//            LocalDateTime startTime = task.getTaskStartTime();
-//            boolean orderSet = false;
-//
-//            // check times for every task and decide the order
-//            for (Task taskToCheck : taskList) {
-//
-//                // check if new order has been set and update the remaining orders
-//                if (orderSet) {
-//                    int oldOrder = taskToCheck.getTaskOrder();
-//                    taskToCheck.setTaskOrder(++oldOrder);
-//                    updateTask(taskToCheck);
-//                }
-//
-//                // get the start time of the task from the list
-//                LocalDateTime startTimeToCheck = taskToCheck.getTaskStartTime();
-//
-//                // check if task if before the checked task and set the new order
-//                if (startTime.isBefore(startTimeToCheck)) {
-//                    int oldOrder = taskToCheck.getTaskOrder();
-//                    task.setTaskOrder(oldOrder);
-//                    taskToCheck.setTaskOrder(++oldOrder);
-//                    updateTask(taskToCheck);
-//                    orderSet = true;
-//
-//                    //TODO: Split into more methods, getting too complex
-//                    //TODO: After changing the order all tasks need to be looped again
-//                    //TODO: Idea: Get rid of ordering in the database and process the list on the backend? Simple sort?
-//                }
-//            }
-//
-//            if (task.getTaskOrder() == null) {
-//                int sizeOfDay = getDateTasks(task.getTaskDate()).size();
-//
-//                // increments by 1 and sets it as the order
-//                sizeOfDay++;
-//                task.setTaskOrder(sizeOfDay);
-//            }
-//        }
-//    }
