@@ -110,6 +110,9 @@ public class TaskService {
 
         // handles correctness for start and end times
         timeProcessor(taskUpdateDetails);
+        // sets the times
+        taskToUpdate.setTaskStartTime(taskUpdateDetails.getTaskStartTime());
+        taskToUpdate.setTaskEndTime(taskUpdateDetails.getTaskEndTime());
 
         taskToUpdate.setTaskDate(taskUpdateDetails.getTaskDate());
 
