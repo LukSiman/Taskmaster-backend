@@ -74,6 +74,9 @@ public class TaskService {
         // By default, status is 0 (not completed)
         taskToSave.setTaskStatus(0);
 
+        // check if note is empty
+        noteProcessing(taskToSave);
+
         // set the category
         Category category = categoryProcessing(taskToSave);
         taskToSave.setCategory(category);
@@ -105,8 +108,11 @@ public class TaskService {
 
         // Update fields with new data
         taskToUpdate.setTaskName(taskUpdateDetails.getTaskName());
-        taskToUpdate.setTaskNote(taskUpdateDetails.getTaskNote());
         taskToUpdate.setTaskStatus(taskUpdateDetails.getTaskStatus());
+
+        // check if note is empty
+        noteProcessing(taskUpdateDetails);
+        taskToUpdate.setTaskNote(taskUpdateDetails.getTaskNote());
 
         // handles correctness for start and end times
         timeProcessor(taskUpdateDetails);
@@ -167,6 +173,16 @@ public class TaskService {
             endTime = LocalDateTime.of(taskToSave.getTaskDate(), LocalTime.parse("00:00:00"));
             taskToSave.setTaskStartTime(startTime);
             taskToSave.setTaskEndTime(endTime);
+        }
+    }
+
+    /**
+     * Checks if note is of zero length
+     */
+    private void noteProcessing(Task taskToSave) {
+        String note = taskToSave.getTaskNote();
+        if (note.trim().length() == 0) {
+            taskToSave.setTaskNote(null);
         }
     }
 
