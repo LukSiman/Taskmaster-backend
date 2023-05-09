@@ -38,7 +38,12 @@ public class TaskService {
      * Return all tasks
      */
     public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+        List<Task> returnList = taskRepository.findAll();
+
+        returnList = handleCorrectOrder(returnList);
+
+        return returnList;
+//        return taskRepository.findAll();
     }
 
     /**
