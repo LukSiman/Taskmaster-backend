@@ -40,10 +40,11 @@ public class TaskService {
     public List<Task> getAllTasks() {
         List<Task> returnList = taskRepository.findAll();
 
+        returnList = handleRepetition(returnList);
+
         returnList = handleCorrectOrder(returnList);
 
         return returnList;
-//        return taskRepository.findAll();
     }
 
     /**
@@ -51,6 +52,8 @@ public class TaskService {
      */
     public List<Task> getDateTasks(LocalDate date) {
         List<Task> returnList = taskRepository.findByTaskDate(date);
+
+        returnList = handleRepetition(returnList);
 
         returnList = handleCorrectOrder(returnList);
 
@@ -129,6 +132,8 @@ public class TaskService {
 
         Category category = categoryProcessing(taskUpdateDetails);
         taskToUpdate.setCategory(category);
+
+        taskToUpdate.setRepetition(taskUpdateDetails.getRepetition());
 
         return taskRepository.save(taskToUpdate);
     }
@@ -236,5 +241,14 @@ public class TaskService {
         listToSort.sort(startTimeComparator);
 
         return listToSort;
+    }
+
+    /**
+    * processes and returns the list according to the repetitions
+    */
+    private List<Task> handleRepetition(List<Task> taskList) {
+
+
+        return taskList;
     }
 }
