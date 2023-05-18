@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -244,9 +245,34 @@ public class TaskService {
     }
 
     /**
-    * processes and returns the list according to the repetitions
-    */
+     * processes and returns the list according to the repetitions
+     */
     private List<Task> handleRepetition(List<Task> taskList) {
+        // create a new list to add repetitions
+        List<Task> repetitionList = new ArrayList<>();
+
+        // iterate over the list and check the repetition value
+        for (Task task : taskList) {
+            String repetitionValue = task.getRepetition();
+            switch (repetitionValue) {
+                case "One time": break;
+                case "Daily":{
+                    //TODO: needs more values like "Daily:2024-06-08" meaning daily and end on June 8, 2024
+                    repetitionList.add(task);
+
+                }
+            }
+
+        }
+
+        return repetitionList;
+    }
+
+    /**
+     * processes custom repetition
+     * TODO: Finish this
+     */
+    private List<Task> customRepetition(List<Task> taskList) {
 
 
         return taskList;
